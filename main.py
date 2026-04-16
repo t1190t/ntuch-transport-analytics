@@ -110,6 +110,7 @@ async def analytics(_=Depends(verify)):
     except Exception as e:
         raise HTTPException(500, f"Sheets 連線失敗: {e}")
 
+    # ── 外接出勤 ──
     records = []
     try:
         rows    = sh.worksheet("外接出勤").get_all_values()
@@ -171,35 +172,52 @@ async def analytics(_=Depends(verify)):
     except Exception as e:
         raise HTTPException(500, f"外接出勤讀取失敗: {e}")
 
-    transfer = 0
+    # ── 轉出（讀取每筆日期）──
+    transfers = []
     try:
-        r2 = sh.worksheet("轉出").get_all_values()
-        transfer = max(0, len(r2) - 1)
-    except Exception:
-        pass
+        t_rows    = sh.worksheet("轉出").get_all_values()
+        t_headers = t_rows[0]
+        tcm = {}
+        for i, h in enumerate(t_headers):
+            hs = h.strip()
+            if hs and hs not in tcm:
+                tcm[hs] = i
 
-    dates      = [r["date"]  for r in records if r["date"]]
+        for row in t_rows[1:]:
+            if not any(row):
+                continue
+            transfers.append({
+                "date": date_fmt(cv(row, tcm, "出勤日期")),
+            })
+    except Exception as e:
+        raise HTTPException(500, f"轉出讀取失敗: {e}")
+
+    # ── 全歷史統計 ──
+    dates      = [r["date"] for r in records if r["date"]]
     years      = sorted(set(r["year"] for r in records if r["year"]))
     tiss_vals  = [r["tiss"]  for r in records if r["tiss"]  is not None]
     ntiss_vals = [r["ntiss"] for r in records if r["ntiss"] is not None]
 
     result = {
         "stats": {
-            "outbound":    len(records),
-            "transfer":    transfer,
-            "total":       len(records) + transfer,
-            "last_date":   max(dates) if dates else "",
-            "years":       years,
-            "avg_tiss":    round(sum(tiss_vals)  / len(tiss_vals),  1) if tiss_vals  else None,
-            "avg_ntiss":   round(sum(ntiss_vals) / len(ntiss_vals), 1) if ntiss_vals else None,
-            "tiss_count":  len(tiss_vals),
-            "ntiss_count": len(ntiss_vals),
-            "max_weight":  find_extreme(records, "weight", maximize=True),
-            "min_weight":  find_extreme(records, "weight", maximize=False),
-            "max_tiss":    find_extreme(records, "tiss",   maximize=True),
-            "max_ntiss":   find_extreme(records, "ntiss",  maximize=True),
+            "outbound":        len(records),
+            "transfer":        len(transfers),
+            "total":           len(records) + len(transfers),
+            "last_date":       max(dates) if dates else "",
+            "years":           years,
+            "all_hospitals":   len(set(r["hospital"] for r in records if r["hospital"])),
+            "all_counties":    len(set(r["county"]   for r in records if r["county"])),
+            "avg_tiss":        round(sum(tiss_vals)  / len(tiss_vals),  1) if tiss_vals  else None,
+            "avg_ntiss":       round(sum(ntiss_vals) / len(ntiss_vals), 1) if ntiss_vals else None,
+            "tiss_count":      len(tiss_vals),
+            "ntiss_count":     len(ntiss_vals),
+            "max_weight":      find_extreme(records, "weight", maximize=True),
+            "min_weight":      find_extreme(records, "weight", maximize=False),
+            "max_tiss":        find_extreme(records, "tiss",   maximize=True),
+            "max_ntiss":       find_extreme(records, "ntiss",  maximize=True),
         },
-        "records": records,
+        "records":   records,
+        "transfers": transfers,
     }
     _cache.update({"data": result, "ts": time.time()})
     return result
