@@ -21,6 +21,7 @@ ANALYTICS_PASSWORD = os.environ.get("ANALYTICS_PASSWORD", "")
 CACHE_SEC          = 1800
 _cache             = {"data": None, "ts": 0}
 security           = HTTPBearer()
+EMPTY              = ("", "nan", "None", "NaN", "沒打", "N/A", "n/a")
 
 
 def verify(cred: HTTPAuthorizationCredentials = Depends(security)):
@@ -33,7 +34,17 @@ def cv(row, cm, name):
     if i is None or i >= len(row):
         return ""
     v = str(row[i]).strip()
-    return "" if v in ("", "nan", "None", "NaN") else v
+    return "" if v in EMPTY else v
+
+
+def cv_float(row, cm, name):
+    v = cv(row, cm, name)
+    if not v:
+        return None
+    try:
+        return float(v)
+    except Exception:
+        return None
 
 
 def date_fmt(s):
@@ -47,6 +58,28 @@ def date_fmt(s):
         if len(p) == 3:
             return f"{p[0]}-{p[1].zfill(2)}-{p[2].zfill(2)}"
     return s
+
+
+def parse_cl_types(raw_cells):
+    types = []
+    seen = set()
+    for cell in raw_cells:
+        if not cell or cell in EMPTY or cell == "無":
+            continue
+        for part in cell.split(","):
+            t = part.strip()
+            if t and t != "無" and t not in seen:
+                types.append(t)
+                seen.add(t)
+    return types
+
+
+def find_extreme(records, key, maximize=True):
+    valid = [(r[key], r["date"], r["hospital"]) for r in records if r.get(key) is not None]
+    if not valid:
+        return {"value": None, "date": "", "hospital": ""}
+    best = max(valid, key=lambda x: x[0]) if maximize else min(valid, key=lambda x: x[0])
+    return {"value": best[0], "date": best[1], "hospital": best[2]}
 
 
 @app.get("/")
@@ -77,20 +110,17 @@ async def analytics(_=Depends(verify)):
     except Exception as e:
         raise HTTPException(500, f"Sheets 連線失敗: {e}")
 
-    # ── 外接出勤 ──
     records = []
     try:
-        rows = sh.worksheet("外接出勤").get_all_values()
+        rows    = sh.worksheet("外接出勤").get_all_values()
         headers = rows[0]
 
-        # 建立欄位索引（同名取第一個）
         cm = {}
         for i, h in enumerate(headers):
             hs = h.strip()
             if hs and hs not in cm:
                 cm[hs] = i
 
-        # Central line 欄位可能重複，取所有索引
         cl_idx = [i for i, h in enumerate(headers) if h.strip() == "是否有以下central line"]
 
         for row in rows[1:]:
@@ -104,32 +134,43 @@ async def analytics(_=Depends(verify)):
                 except Exception:
                     pass
 
-            cl = []
+            raw_cl = []
             for i in cl_idx[:4]:
                 v = str(row[i]).strip() if i < len(row) else ""
-                cl.append("" if v in ("", "nan", "None", "NaN") else v)
+                raw_cl.append("" if v in EMPTY else v)
 
-            records.append(
-                {
-                    "year":      yr,
-                    "date":      date_fmt(cv(row, cm, "出勤日期")),
-                    "hospital":  cv(row, cm, "轉出院所名稱"),
-                    "inst_type": cv(row, cm, "醫療機構分類"),
-                    "county":    cv(row, cm, "出勤縣市"),
-                    "unit":      cv(row, cm, "轉出單位"),
-                    "nurse":     cv(row, cm, "轉診成員-護理師姓名"),
-                    "doctor":    cv(row, cm, "轉診成員-醫師姓名"),
-                    "specialty": cv(row, cm, "病人疾病科別"),
-                    "adm_unit":  cv(row, cm, "入住單位"),
-                    "airway":    cv(row, cm, "呼吸"),
-                    "aline":     cv(row, cm, "動脈導管(A-line)"),
-                    "cl":        cl,
-                }
-            )
+            tiss = cv_float(row, cm, "TISS")
+            if tiss is None:
+                tiss = cv_float(row, cm, "TISS分數")
+
+            ntiss = cv_float(row, cm, "NTISS")
+            if ntiss is None:
+                ntiss = cv_float(row, cm, "NTISS分數")
+
+            records.append({
+                "year":      yr,
+                "date":      date_fmt(cv(row, cm, "出勤日期")),
+                "hospital":  cv(row, cm, "轉出院所名稱"),
+                "inst_type": cv(row, cm, "醫療機構分類"),
+                "county":    cv(row, cm, "出勤縣市"),
+                "unit":      cv(row, cm, "轉出單位"),
+                "nurse":     cv(row, cm, "轉診成員-護理師姓名"),
+                "doctor":    cv(row, cm, "轉診成員-醫師姓名"),
+                "specialty": cv(row, cm, "病人疾病科別"),
+                "adm_unit":  cv(row, cm, "入住單位"),
+                "airway":    cv(row, cm, "呼吸"),
+                "aline":     cv(row, cm, "動脈導管(A-line)"),
+                "cl_types":  parse_cl_types(raw_cl),
+                "gender":    cv(row, cm, "病人性別"),
+                "cv_drug":   cv(row, cm, "心血管用藥種類"),
+                "ga":        cv_float(row, cm, "GA(週)"),
+                "weight":    cv_float(row, cm, "病人現在體重"),
+                "tiss":      tiss,
+                "ntiss":     ntiss,
+            })
     except Exception as e:
         raise HTTPException(500, f"外接出勤讀取失敗: {e}")
 
-    # ── 轉出（只計趟次）──
     transfer = 0
     try:
         r2 = sh.worksheet("轉出").get_all_values()
@@ -137,16 +178,26 @@ async def analytics(_=Depends(verify)):
     except Exception:
         pass
 
-    dates = [r["date"] for r in records if r["date"]]
-    years = sorted(set(r["year"] for r in records if r["year"]))
+    dates      = [r["date"]  for r in records if r["date"]]
+    years      = sorted(set(r["year"] for r in records if r["year"]))
+    tiss_vals  = [r["tiss"]  for r in records if r["tiss"]  is not None]
+    ntiss_vals = [r["ntiss"] for r in records if r["ntiss"] is not None]
 
     result = {
         "stats": {
-            "outbound":  len(records),
-            "transfer":  transfer,
-            "total":     len(records) + transfer,
-            "last_date": max(dates) if dates else "",
-            "years":     years,
+            "outbound":    len(records),
+            "transfer":    transfer,
+            "total":       len(records) + transfer,
+            "last_date":   max(dates) if dates else "",
+            "years":       years,
+            "avg_tiss":    round(sum(tiss_vals)  / len(tiss_vals),  1) if tiss_vals  else None,
+            "avg_ntiss":   round(sum(ntiss_vals) / len(ntiss_vals), 1) if ntiss_vals else None,
+            "tiss_count":  len(tiss_vals),
+            "ntiss_count": len(ntiss_vals),
+            "max_weight":  find_extreme(records, "weight", maximize=True),
+            "min_weight":  find_extreme(records, "weight", maximize=False),
+            "max_tiss":    find_extreme(records, "tiss",   maximize=True),
+            "max_ntiss":   find_extreme(records, "ntiss",  maximize=True),
         },
         "records": records,
     }
