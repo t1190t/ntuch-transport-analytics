@@ -17,7 +17,6 @@
   --text-muted: #9a9189;
   --text-light: #c4bfb8;
   --accent: #4a6741;
-  --accent-light: #edf2ec;
   --sans: 'Noto Sans TC', sans-serif;
   --mono: 'DM Mono', monospace;
   --shadow: 0 2px 12px rgba(0,0,0,0.06);
@@ -25,7 +24,7 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { background: var(--bg); font-family: var(--sans); color: var(--text); font-size: 14px; line-height: 1.6; }
 
-/* ── Password Screen ── */
+/* ── Password ── */
 #pw-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; }
 .pw-card { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 52px 44px; width: 380px; text-align: center; box-shadow: var(--shadow); }
 .pw-logo { width: 52px; height: 52px; background: var(--text); border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 22px; }
@@ -46,7 +45,7 @@ body { background: var(--bg); font-family: var(--sans); color: var(--text); font
 
 /* ── Header ── */
 #app { display: none; }
-header { background: rgba(255,255,255,0.92); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); padding: 0 32px; height: 58px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+header { background: rgba(255,255,255,0.92); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); padding: 0 32px; height: 58px; display: flex; align-items: center; position: sticky; top: 0; z-index: 100; }
 .header-left { display: flex; align-items: center; gap: 12px; }
 .logo-mark { width: 34px; height: 34px; background: var(--text); border-radius: 9px; display: flex; align-items: center; justify-content: center; }
 .logo-mark svg { color: white; }
@@ -57,12 +56,28 @@ header { background: rgba(255,255,255,0.92); backdrop-filter: blur(10px); border
 main { max-width: 1200px; margin: 0 auto; padding: 28px 24px 60px; }
 
 /* ── Stats Bar ── */
-.stats-bar { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 22px; }
+.stats-bar { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 12px; }
 .stat-cell { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px 16px; text-align: center; }
 .stat-num { font-family: var(--mono); font-size: 26px; color: var(--text); line-height: 1; margin-bottom: 4px; }
 .stat-num-sm { font-family: var(--mono); font-size: 14px; color: var(--text); line-height: 1.5; margin-bottom: 4px; }
 .stat-sub { font-size: 11px; color: var(--text-muted); font-family: var(--mono); margin-bottom: 4px; }
 .stat-label { font-size: 11px; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; }
+
+/* ── Avg Bar (TISS / NTISS) ── */
+.avg-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.avg-cell { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; }
+.avg-num { font-family: var(--mono); font-size: 28px; color: var(--text); flex-shrink: 0; }
+.avg-detail { text-align: left; }
+.avg-label { font-size: 12px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+.avg-n { font-size: 11px; color: var(--text-muted); font-family: var(--mono); }
+
+/* ── Record Cards (極值) ── */
+.record-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 22px; }
+.record-cell { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; }
+.record-badge { font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-light); font-weight: 500; margin-bottom: 8px; }
+.record-val { font-family: var(--mono); font-size: 20px; color: var(--text); line-height: 1; margin-bottom: 6px; }
+.record-date { font-family: var(--mono); font-size: 11px; color: var(--text-muted); margin-bottom: 3px; }
+.record-hosp { font-size: 11px; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* ── Filter ── */
 .filter-section { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px 24px; margin-bottom: 28px; }
@@ -81,22 +96,24 @@ main { max-width: 1200px; margin: 0 auto; padding: 28px 24px 60px; }
 .section-title { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-light); font-weight: 500; margin: 32px 0 16px; display: flex; align-items: center; gap: 14px; }
 .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-/* ── Chart Grids ── */
+/* ── Grids ── */
+.charts-1col { margin-bottom: 18px; }
 .charts-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px; }
 .charts-3col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-bottom: 18px; }
-.charts-4col { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-bottom: 18px; }
-.charts-1col { margin-bottom: 18px; }
 
 /* ── Chart Card ── */
 .chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 22px 24px; }
 .chart-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); font-weight: 500; margin-bottom: 18px; }
+.chart-note { font-size: 10px; color: var(--text-light); margin-top: 8px; font-style: italic; }
 .chart-wrap { position: relative; }
 .h200 { height: 200px; }
+.h240 { height: 240px; }
+.h280 { height: 280px; }
 .h320 { height: 320px; }
+.h380 { height: 380px; }
 .h420 { height: 420px; }
 .h520 { height: 520px; }
 .h580 { height: 580px; }
-.h240 { height: 240px; }
 
 /* ── Data Table ── */
 .table-btn { margin-top: 14px; background: none; border: 1px solid var(--border); border-radius: 6px; padding: 5px 12px; font-size: 11px; color: var(--text-muted); cursor: pointer; transition: all 0.15s; font-family: var(--sans); }
@@ -110,12 +127,14 @@ main { max-width: 1200px; margin: 0 auto; padding: 28px 24px 60px; }
 
 /* ── Responsive ── */
 @media (max-width: 960px) {
-  .charts-4col { grid-template-columns: repeat(2, 1fr); }
   .stats-bar { grid-template-columns: repeat(3, 1fr); }
+  .record-bar { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 640px) {
-  .charts-2col, .charts-3col, .charts-4col { grid-template-columns: 1fr; }
+  .charts-2col, .charts-3col { grid-template-columns: 1fr; }
   .stats-bar { grid-template-columns: repeat(2, 1fr); }
+  .avg-bar { grid-template-columns: 1fr; }
+  .record-bar { grid-template-columns: repeat(2, 1fr); }
   main { padding: 16px 16px 40px; }
   header { padding: 0 16px; }
 }
@@ -162,7 +181,8 @@ main { max-width: 1200px; margin: 0 auto; padding: 28px 24px 60px; }
   </header>
 
   <main>
-    <!-- Stats Bar -->
+
+    <!-- ① 任務總覽 -->
     <div class="stats-bar">
       <div class="stat-cell">
         <div class="stat-num" id="s-total">—</div>
@@ -184,6 +204,52 @@ main { max-width: 1200px; margin: 0 auto; padding: 28px 24px 60px; }
       <div class="stat-cell">
         <div class="stat-num-sm" id="s-last-date">—</div>
         <div class="stat-label">資料更新日期</div>
+      </div>
+    </div>
+
+    <!-- ② TISS / NTISS 平均（隨篩選更新）-->
+    <div class="avg-bar">
+      <div class="avg-cell">
+        <div class="avg-num" id="s-avg-tiss">—</div>
+        <div class="avg-detail">
+          <div class="avg-label">TISS 平均分數</div>
+          <div class="avg-n" id="s-tiss-n">n = —</div>
+        </div>
+      </div>
+      <div class="avg-cell">
+        <div class="avg-num" id="s-avg-ntiss">—</div>
+        <div class="avg-detail">
+          <div class="avg-label">NTISS 平均分數</div>
+          <div class="avg-n" id="s-ntiss-n">n = —</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ③ 歷史極值記錄（全歷史固定，不隨篩選變動）-->
+    <div class="record-bar">
+      <div class="record-cell">
+        <div class="record-badge">歷史最重體重</div>
+        <div class="record-val" id="r-max-weight-val">—</div>
+        <div class="record-date" id="r-max-weight-date">—</div>
+        <div class="record-hosp" id="r-max-weight-hosp">—</div>
+      </div>
+      <div class="record-cell">
+        <div class="record-badge">歷史最輕體重</div>
+        <div class="record-val" id="r-min-weight-val">—</div>
+        <div class="record-date" id="r-min-weight-date">—</div>
+        <div class="record-hosp" id="r-min-weight-hosp">—</div>
+      </div>
+      <div class="record-cell">
+        <div class="record-badge">TISS 最高分</div>
+        <div class="record-val" id="r-max-tiss-val">—</div>
+        <div class="record-date" id="r-max-tiss-date">—</div>
+        <div class="record-hosp" id="r-max-tiss-hosp">—</div>
+      </div>
+      <div class="record-cell">
+        <div class="record-badge">NTISS 最高分</div>
+        <div class="record-val" id="r-max-ntiss-val">—</div>
+        <div class="record-date" id="r-max-ntiss-date">—</div>
+        <div class="record-hosp" id="r-max-ntiss-hosp">—</div>
       </div>
     </div>
 
@@ -211,7 +277,7 @@ main { max-width: 1200px; margin: 0 auto; padding: 28px 24px 60px; }
       </div>
     </div>
 
-    <!-- 地理分布 -->
+    <!-- 地理與院所 -->
     <div class="section-title">地理與院所類型</div>
     <div class="charts-2col">
       <div class="chart-card">
@@ -228,15 +294,37 @@ main { max-width: 1200px; margin: 0 auto; padding: 28px 24px 60px; }
       </div>
     </div>
 
-    <!-- 臨床指標 -->
-    <div class="section-title">臨床指標</div>
-    <div class="charts-3col">
+    <!-- 病人基本資料 -->
+    <div class="section-title">病人基本資料</div>
+    <div class="charts-2col">
       <div class="chart-card">
-        <div class="chart-title">Airway · 插管比例</div>
-        <div class="chart-wrap h240"><canvas id="c-airway"></canvas></div>
+        <div class="chart-title">病人性別</div>
+        <div class="chart-wrap h240"><canvas id="c-gender"></canvas></div>
+        <button class="table-btn" onclick="toggleTbl('t-gender',this)">顯示數據</button>
+        <div class="table-wrap" id="t-gender"></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">胎齡分組（GA 週數）</div>
+        <div class="chart-wrap h240"><canvas id="c-ga"></canvas></div>
+        <button class="table-btn" onclick="toggleTbl('t-ga',this)">顯示數據</button>
+        <div class="table-wrap" id="t-ga"></div>
+      </div>
+    </div>
+
+    <!-- 呼吸支持 -->
+    <div class="section-title">呼吸支持</div>
+    <div class="charts-1col">
+      <div class="chart-card">
+        <div class="chart-title">呼吸支持類型</div>
+        <div class="chart-wrap h280"><canvas id="c-airway"></canvas></div>
         <button class="table-btn" onclick="toggleTbl('t-airway',this)">顯示數據</button>
         <div class="table-wrap" id="t-airway"></div>
       </div>
+    </div>
+
+    <!-- 管路 -->
+    <div class="section-title">管路</div>
+    <div class="charts-2col">
       <div class="chart-card">
         <div class="chart-title">動脈導管（A-line）</div>
         <div class="chart-wrap h240"><canvas id="c-aline"></canvas></div>
@@ -244,10 +332,37 @@ main { max-width: 1200px; margin: 0 auto; padding: 28px 24px 60px; }
         <div class="table-wrap" id="t-aline"></div>
       </div>
       <div class="chart-card">
-        <div class="chart-title">Central Line 比例</div>
-        <div class="chart-wrap h240"><canvas id="c-cl"></canvas></div>
-        <button class="table-btn" onclick="toggleTbl('t-cl',this)">顯示數據</button>
-        <div class="table-wrap" id="t-cl"></div>
+        <div class="chart-title">Central Line · 有 / 無</div>
+        <div class="chart-wrap h240"><canvas id="c-cl-donut"></canvas></div>
+        <button class="table-btn" onclick="toggleTbl('t-cl-donut',this)">顯示數據</button>
+        <div class="table-wrap" id="t-cl-donut"></div>
+      </div>
+    </div>
+    <div class="charts-1col">
+      <div class="chart-card">
+        <div class="chart-title">Central Line · 管路類型分布</div>
+        <div class="chart-wrap h200"><canvas id="c-cl-bar"></canvas></div>
+        <div class="chart-note">* 同一病人可能有複數管路，各類型計數獨立計算，加總可能超過有 CL 的病人數</div>
+        <button class="table-btn" onclick="toggleTbl('t-cl-bar',this)">顯示數據</button>
+        <div class="table-wrap" id="t-cl-bar"></div>
+      </div>
+    </div>
+
+    <!-- 心血管用藥 -->
+    <div class="section-title">心血管用藥</div>
+    <div class="charts-2col">
+      <div class="chart-card">
+        <div class="chart-title">升壓藥使用比例</div>
+        <div class="chart-wrap h240"><canvas id="c-cv-donut"></canvas></div>
+        <button class="table-btn" onclick="toggleTbl('t-cv-donut',this)">顯示數據</button>
+        <div class="table-wrap" id="t-cv-donut"></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">升壓藥種類分布</div>
+        <div class="chart-wrap h240"><canvas id="c-cv-bar"></canvas></div>
+        <div class="chart-note">* 同一病人可能使用複數藥物，各藥物獨立計算</div>
+        <button class="table-btn" onclick="toggleTbl('t-cv-bar',this)">顯示數據</button>
+        <div class="table-wrap" id="t-cv-bar"></div>
       </div>
     </div>
 
@@ -262,7 +377,7 @@ main { max-width: 1200px; margin: 0 auto; padding: 28px 24px 60px; }
       </div>
     </div>
 
-    <!-- 院所 -->
+    <!-- 轉出院所 -->
     <div class="section-title">轉出院所</div>
     <div class="charts-1col">
       <div class="chart-card">
@@ -306,30 +421,29 @@ main { max-width: 1200px; margin: 0 auto; padding: 28px 24px 60px; }
         <div class="table-wrap" id="t-doctor"></div>
       </div>
     </div>
+
   </main>
 </div>
 
 <script>
-// ▶ 修改這裡：填入你的 Render 後端網址
 const BACKEND = 'https://ntuch-transport-analytics.onrender.com';
 
-// ── 顏色 ──
 const PALETTE = [
   '#4a6741','#8b7d55','#5a7a8a','#a07060','#707862',
   '#7a6080','#4a7080','#806040','#507060','#604870',
   '#708050','#504060','#406070','#705040','#405060'
 ];
 const BAR_COLOR = '#4a6741';
+const GA_ORDER  = ['<28週','28-31週','32-36週','37-41週','>41週','不詳'];
 
-let rawData   = null;
+let rawData    = null;
 let activeYear = '全部';
-let charts    = {};
+let charts     = {};
 
 // ── 密碼 ──
 document.getElementById('pw-input').addEventListener('keydown', e => {
   if (e.key === 'Enter') submitPw();
 });
-
 async function submitPw() {
   const pw = document.getElementById('pw-input').value.trim();
   if (!pw) return;
@@ -338,7 +452,6 @@ async function submitPw() {
   sessionStorage.setItem('ntuch_analytics_pw', pw);
   await loadData(pw);
 }
-
 async function loadData(pw) {
   try {
     const res = await fetch(`${BACKEND}/api/analytics-data`, {
@@ -374,6 +487,12 @@ function initApp() {
   document.getElementById('s-sub').textContent      = `外接: ${s.outbound} | 轉出: ${s.transfer}`;
   document.getElementById('s-last-date').textContent = s.last_date || '—';
 
+  // 極值卡片（全歷史，固定）
+  setRecord('max-weight', s.max_weight, ' kg');
+  setRecord('min-weight', s.min_weight, ' kg');
+  setRecord('max-tiss',   s.max_tiss,   ' 分');
+  setRecord('max-ntiss',  s.max_ntiss,  ' 分');
+
   // 年份按鈕
   const container = document.getElementById('year-buttons');
   ['全部', ...s.years].forEach(y => {
@@ -386,6 +505,12 @@ function initApp() {
 
   initCharts();
   applyFilter();
+}
+
+function setRecord(prefix, data, unit = '') {
+  document.getElementById(`r-${prefix}-val`).textContent  = data.value !== null && data.value !== undefined ? `${data.value}${unit}` : '—';
+  document.getElementById(`r-${prefix}-date`).textContent = data.date     || '—';
+  document.getElementById(`r-${prefix}-hosp`).textContent = data.hospital || '—';
 }
 
 function selectYear(y) {
@@ -403,7 +528,7 @@ function getFiltered() {
   return rawData.records.filter(r => {
     if (activeYear !== '全部' && r.year !== activeYear) return false;
     if (r.date && r.date.length >= 7) {
-      const m = parseInt(r.date.substring(5, 7));
+      const m  = parseInt(r.date.substring(5, 7));
       const lo = Math.min(from, to), hi = Math.max(from, to);
       if (m < lo || m > hi) return false;
     }
@@ -413,10 +538,21 @@ function getFiltered() {
 
 function applyFilter() {
   const f = getFiltered();
-  document.getElementById('filter-count').textContent  = `篩選中：${f.length} 筆`;
-  document.getElementById('s-filtered').textContent    = f.length;
-  document.getElementById('s-hospitals').textContent   = new Set(f.map(r => r.hospital).filter(Boolean)).size;
-  document.getElementById('s-counties').textContent    = new Set(f.map(r => r.county).filter(Boolean)).size;
+  const n = f.length;
+
+  document.getElementById('filter-count').textContent = `篩選中：${n} 筆`;
+  document.getElementById('s-filtered').textContent   = n;
+  document.getElementById('s-hospitals').textContent  = new Set(f.map(r => r.hospital).filter(Boolean)).size;
+  document.getElementById('s-counties').textContent   = new Set(f.map(r => r.county).filter(Boolean)).size;
+
+  // TISS / NTISS 平均（隨篩選更新）
+  const tissV  = f.map(r => r.tiss).filter(x => x !== null && x !== undefined);
+  const ntissV = f.map(r => r.ntiss).filter(x => x !== null && x !== undefined);
+  document.getElementById('s-avg-tiss').textContent  = tissV.length  ? (tissV.reduce((a,b)=>a+b,0)/tissV.length).toFixed(1)   : '—';
+  document.getElementById('s-avg-ntiss').textContent = ntissV.length ? (ntissV.reduce((a,b)=>a+b,0)/ntissV.length).toFixed(1) : '—';
+  document.getElementById('s-tiss-n').textContent    = `n = ${tissV.length}`;
+  document.getElementById('s-ntiss-n').textContent   = `n = ${ntissV.length}`;
+
   updateAllCharts(f);
 }
 
@@ -433,26 +569,40 @@ function freq(arr, key, top = 0) {
   return { labels: sorted.map(x => x[0]), data: sorted.map(x => x[1]) };
 }
 
-function renderTbl(id, labels, data, total) {
+function renderTbl(id, labels, data, total, note) {
   const el = document.getElementById(id);
-  if (!labels.length) { el.innerHTML = '<div style="padding:12px;font-size:13px;color:var(--text-muted);">無資料</div>'; return; }
+  if (!labels.length) {
+    el.innerHTML = '<div style="padding:12px;font-size:13px;color:var(--text-muted);">無資料</div>';
+    return;
+  }
   const rows = labels.map((l, i) => {
     const pct = total > 0 ? ((data[i] / total) * 100).toFixed(1) : '0.0';
     return `<tr><td>${l}</td><td>${data[i]}</td><td>${pct}%</td></tr>`;
   }).join('');
+  const noteHtml = note ? `<tr><td colspan="3" style="font-size:10px;color:var(--text-light);font-style:italic;padding:6px 10px;">${note}</td></tr>` : '';
   el.innerHTML = `<table class="data-table">
     <thead><tr><th>項目</th><th style="text-align:right">次數</th><th style="text-align:right">比例</th></tr></thead>
-    <tbody>${rows}</tbody>
+    <tbody>${rows}${noteHtml}</tbody>
   </table>`;
 }
 
 function toggleTbl(id, btn) {
-  const el = document.getElementById(id);
+  const el   = document.getElementById(id);
   const show = el.style.display !== 'block';
   el.style.display = show ? 'block' : 'none';
   btn.textContent  = show ? '隱藏數據' : '顯示數據';
 }
 
+function gaGroup(ga) {
+  if (ga === null || ga === undefined) return '不詳';
+  if (ga < 28)  return '<28週';
+  if (ga < 32)  return '28-31週';
+  if (ga < 37)  return '32-36週';
+  if (ga <= 41) return '37-41週';
+  return '>41週';
+}
+
+// ── Chart factories ──
 function makeBar(id) {
   const ctx = document.getElementById(id).getContext('2d');
   return new Chart(ctx, {
@@ -468,14 +618,8 @@ function makeBar(id) {
         tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.x} 次` } }
       },
       scales: {
-        x: {
-          grid: { color: '#f0ede8' },
-          ticks: { font: { family: 'DM Mono', size: 12 }, color: '#9a9189' }
-        },
-        y: {
-          grid: { display: false },
-          ticks: { font: { family: 'Noto Sans TC', size: 12 }, color: '#2c2825' }
-        }
+        x: { grid: { color: '#f0ede8' }, ticks: { font: { family: 'DM Mono', size: 12 }, color: '#9a9189' } },
+        y: { grid: { display: false },   ticks: { font: { family: 'Noto Sans TC', size: 12 }, color: '#2c2825' } }
       }
     }
   });
@@ -485,20 +629,14 @@ function makeDonut(id) {
   const ctx = document.getElementById(id).getContext('2d');
   return new Chart(ctx, {
     type: 'doughnut',
-    data: {
-      labels: [],
-      datasets: [{ data: [], backgroundColor: PALETTE, borderWidth: 2, borderColor: '#ffffff', hoverOffset: 6 }]
-    },
+    data: { labels: [], datasets: [{ data: [], backgroundColor: PALETTE, borderWidth: 2, borderColor: '#ffffff', hoverOffset: 6 }] },
     options: {
       responsive: true,
       maintainAspectRatio: false,
       animation: false,
       cutout: '62%',
       plugins: {
-        legend: {
-          position: 'bottom',
-          labels: { font: { family: 'Noto Sans TC', size: 11 }, color: '#9a9189', padding: 10, boxWidth: 12 }
-        },
+        legend: { position: 'bottom', labels: { font: { family: 'Noto Sans TC', size: 11 }, color: '#9a9189', padding: 10, boxWidth: 12 } },
         tooltip: {
           callbacks: {
             label: ctx => {
@@ -515,7 +653,7 @@ function makeDonut(id) {
 
 function setBar(chart, labels, data, color) {
   chart.data.labels = labels;
-  chart.data.datasets[0].data  = data;
+  chart.data.datasets[0].data = data;
   if (color) chart.data.datasets[0].backgroundColor = color;
   chart.update('none');
 }
@@ -527,19 +665,24 @@ function setDonut(chart, labels, data) {
   chart.update('none');
 }
 
-// ── 建立所有圖表 ──
+// ── 初始化所有圖表 ──
 function initCharts() {
-  charts.county    = makeBar('c-county');
-  charts.inst      = makeBar('c-inst');
-  charts.airway    = makeDonut('c-airway');
-  charts.aline     = makeDonut('c-aline');
-  charts.cl        = makeDonut('c-cl');
-  charts.specialty = makeBar('c-specialty');
-  charts.hospital  = makeBar('c-hospital');
-  charts.unit      = makeBar('c-unit');
-  charts.adm       = makeBar('c-adm');
-  charts.nurse     = makeBar('c-nurse');
-  charts.doctor    = makeBar('c-doctor');
+  charts.county   = makeBar('c-county');
+  charts.inst     = makeBar('c-inst');
+  charts.gender   = makeDonut('c-gender');
+  charts.ga       = makeBar('c-ga');
+  charts.airway   = makeBar('c-airway');
+  charts.aline    = makeDonut('c-aline');
+  charts.clDonut  = makeDonut('c-cl-donut');
+  charts.clBar    = makeBar('c-cl-bar');
+  charts.cvDonut  = makeDonut('c-cv-donut');
+  charts.cvBar    = makeBar('c-cv-bar');
+  charts.specialty= makeBar('c-specialty');
+  charts.hospital = makeBar('c-hospital');
+  charts.unit     = makeBar('c-unit');
+  charts.adm      = makeBar('c-adm');
+  charts.nurse    = makeBar('c-nurse');
+  charts.doctor   = makeBar('c-doctor');
 }
 
 // ── 更新所有圖表 ──
@@ -556,33 +699,65 @@ function updateAllCharts(f) {
   setBar(charts.inst, inst.labels, inst.data);
   renderTbl('t-inst', inst.labels, inst.data, n);
 
-  // Airway
-  const aw = { 'ETT（插管）': 0, 'Room Air': 0, '其他': 0 };
-  f.forEach(r => {
-    const v = (r.airway || '').toUpperCase();
-    if (v.includes('ETT'))      aw['ETT（插管）']++;
-    else if (v.includes('ROOM')) aw['Room Air']++;
-    else if (v)                  aw['其他']++;
-    else                         aw['Room Air']++;
-  });
-  const awL = Object.keys(aw).filter(k => aw[k] > 0);
-  const awD = awL.map(k => aw[k]);
-  setDonut(charts.airway, awL, awD);
-  renderTbl('t-airway', awL, awD, n);
+  // 性別
+  const genderC = {};
+  f.forEach(r => { if (r.gender) genderC[r.gender] = (genderC[r.gender]||0)+1; });
+  const gL = Object.keys(genderC), gD = Object.values(genderC);
+  setDonut(charts.gender, gL, gD);
+  renderTbl('t-gender', gL, gD, n);
+
+  // GA 週數分組
+  const gaC = {};
+  GA_ORDER.forEach(k => gaC[k] = 0);
+  f.forEach(r => { const g = gaGroup(r.ga); gaC[g]++; });
+  const gaLabels = GA_ORDER.filter(k => gaC[k] > 0);
+  const gaData   = gaLabels.map(k => gaC[k]);
+  setBar(charts.ga, gaLabels, gaData);
+  renderTbl('t-ga', gaLabels, gaData, n);
+
+  // 呼吸支持（橫向長條）
+  const aw = freq(f, 'airway');
+  setBar(charts.airway, aw.labels, aw.data);
+  renderTbl('t-airway', aw.labels, aw.data, n);
 
   // A-line
   let alY = 0, alN = 0;
   f.forEach(r => { (!r.aline || r.aline === '無') ? alN++ : alY++; });
-  setDonut(charts.aline, ['有', '無'], [alY, alN]);
-  renderTbl('t-aline', ['有', '無'], [alY, alN], n);
+  setDonut(charts.aline, ['有','無'], [alY, alN]);
+  renderTbl('t-aline', ['有','無'], [alY, alN], n);
 
-  // Central line
+  // Central line donut（有/無）
   let clY = 0, clN = 0;
+  f.forEach(r => { (r.cl_types && r.cl_types.length > 0) ? clY++ : clN++; });
+  setDonut(charts.clDonut, ['有 CL','無 CL'], [clY, clN]);
+  renderTbl('t-cl-donut', ['有 CL','無 CL'], [clY, clN], n);
+
+  // Central line bar（各類型，獨立計算）
+  const clTypeC = {};
+  f.forEach(r => { (r.cl_types||[]).forEach(t => { clTypeC[t] = (clTypeC[t]||0)+1; }); });
+  const clSorted = Object.entries(clTypeC).sort((a,b) => b[1]-a[1]);
+  setBar(charts.clBar, clSorted.map(x=>x[0]), clSorted.map(x=>x[1]));
+  renderTbl('t-cl-bar', clSorted.map(x=>x[0]), clSorted.map(x=>x[1]), clY,
+    '* 同一病人可能有複數管路，加總可能超過有 CL 的病人數');
+
+  // 心血管用藥 donut
+  let cvY = 0, cvN = 0;
+  f.forEach(r => { (!r.cv_drug || r.cv_drug === '無') ? cvN++ : cvY++; });
+  setDonut(charts.cvDonut, ['有升壓藥','無'], [cvY, cvN]);
+  renderTbl('t-cv-donut', ['有升壓藥','無'], [cvY, cvN], n);
+
+  // 心血管用藥 bar（各藥物獨立計算）
+  const cvTypeC = {};
   f.forEach(r => {
-    (r.cl || []).some(v => v && v !== '無') ? clY++ : clN++;
+    if (!r.cv_drug || r.cv_drug === '無') return;
+    r.cv_drug.split(',').map(x=>x.trim()).filter(Boolean).forEach(d => {
+      cvTypeC[d] = (cvTypeC[d]||0)+1;
+    });
   });
-  setDonut(charts.cl, ['有', '無'], [clY, clN]);
-  renderTbl('t-cl', ['有', '無'], [clY, clN], n);
+  const cvSorted = Object.entries(cvTypeC).sort((a,b) => b[1]-a[1]);
+  setBar(charts.cvBar, cvSorted.map(x=>x[0]), cvSorted.map(x=>x[1]));
+  renderTbl('t-cv-bar', cvSorted.map(x=>x[0]), cvSorted.map(x=>x[1]), cvY,
+    '* 同一病人可能使用複數藥物，各藥物獨立計算');
 
   // 科別
   const spec = freq(f, 'specialty', 15);
@@ -613,7 +788,7 @@ function updateAllCharts(f) {
   renderTbl('t-doctor', doctor.labels, doctor.data, n);
 }
 
-// ── 自動登入（session 記住密碼）──
+// ── 自動登入 ──
 const savedPw = sessionStorage.getItem('ntuch_analytics_pw');
 if (savedPw) {
   document.getElementById('pw-screen').style.display = 'none';
