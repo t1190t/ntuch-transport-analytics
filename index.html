@@ -207,25 +207,7 @@ main { max-width: 1200px; margin: 0 auto; padding: 28px 24px 60px; }
       </div>
     </div>
 
-    <!-- ② TISS / NTISS 平均（隨篩選更新）-->
-    <div class="avg-bar">
-      <div class="avg-cell">
-        <div class="avg-num" id="s-avg-tiss">—</div>
-        <div class="avg-detail">
-          <div class="avg-label">TISS 平均分數</div>
-          <div class="avg-n" id="s-tiss-n">n = —</div>
-        </div>
-      </div>
-      <div class="avg-cell">
-        <div class="avg-num" id="s-avg-ntiss">—</div>
-        <div class="avg-detail">
-          <div class="avg-label">NTISS 平均分數</div>
-          <div class="avg-n" id="s-ntiss-n">n = —</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ③ 歷史極值記錄（全歷史固定，不隨篩選變動）-->
+    <!-- ② 歷史極值記錄（全歷史固定，不隨篩選變動）-->
     <div class="record-bar">
       <div class="record-cell">
         <div class="record-badge">歷史最重體重</div>
@@ -274,6 +256,24 @@ main { max-width: 1200px; margin: 0 auto; padding: 28px 24px 60px; }
           <option value="10">10月</option><option value="11">11月</option><option value="12" selected>12月</option>
         </select>
         <span class="filter-count" id="filter-count">篩選中：— 筆</span>
+      </div>
+    </div>
+
+    <!-- TISS / NTISS 平均（隨篩選年份／月份更新）-->
+    <div class="avg-bar" style="margin-bottom:28px;">
+      <div class="avg-cell">
+        <div class="avg-num" id="s-avg-tiss">—</div>
+        <div class="avg-detail">
+          <div class="avg-label">TISS 平均分數</div>
+          <div class="avg-n" id="s-tiss-n">n = —</div>
+        </div>
+      </div>
+      <div class="avg-cell">
+        <div class="avg-num" id="s-avg-ntiss">—</div>
+        <div class="avg-detail">
+          <div class="avg-label">NTISS 平均分數</div>
+          <div class="avg-n" id="s-ntiss-n">n = —</div>
+        </div>
       </div>
     </div>
 
@@ -489,7 +489,12 @@ function initApp() {
 
   // 極值卡片（全歷史，固定）
   setRecord('max-weight', s.max_weight, ' kg');
-  setRecord('min-weight', s.min_weight, ' kg');
+  // 最輕體重改顯示公克
+  if (s.min_weight.value !== null && s.min_weight.value !== undefined) {
+    document.getElementById('r-min-weight-val').textContent  = `${Math.round(s.min_weight.value * 1000)} g`;
+    document.getElementById('r-min-weight-date').textContent = s.min_weight.date     || '—';
+    document.getElementById('r-min-weight-hosp').textContent = s.min_weight.hospital || '—';
+  }
   setRecord('max-tiss',   s.max_tiss,   ' 分');
   setRecord('max-ntiss',  s.max_ntiss,  ' 分');
 
