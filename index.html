@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>台大兒童轉運外接 · 統計分析</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg: #f7f5f2;
+  --surface: #ffffff;
+  --surface2: #f0ede8;
+  --border: #e2ddd6;
+  --text: #2c2825;
+  --text-muted: #9a9189;
+  --text-light: #c4bfb8;
+  --accent: #4a6741;
+  --accent-light: #edf2ec;
+  --sans: 'Noto Sans TC', sans-serif;
+  --mono: 'DM Mono', monospace;
+  --shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); font-family: var(--sans); color: var(--text); font-size: 14px; line-height: 1.6; }
+
+/* ── Password Screen ── */
+#pw-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+.pw-card { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 52px 44px; width: 380px; text-align: center; box-shadow: var(--shadow); }
+.pw-logo { width: 52px; height: 52px; background: var(--text); border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 22px; }
+.pw-logo svg { color: white; }
+.pw-title { font-size: 18px; font-weight: 500; margin-bottom: 6px; }
+.pw-subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 34px; }
+.pw-input { width: 100%; border: 1.5px solid var(--border); background: var(--bg); border-radius: 10px; padding: 13px 16px; font-family: var(--sans); font-size: 15px; color: var(--text); outline: none; text-align: center; letter-spacing: 0.12em; margin-bottom: 14px; transition: border-color 0.2s; }
+.pw-input:focus { border-color: var(--accent); }
+.pw-btn { width: 100%; background: var(--text); color: white; border: none; border-radius: 10px; padding: 13px; font-family: var(--sans); font-size: 15px; font-weight: 500; cursor: pointer; transition: opacity 0.2s; }
+.pw-btn:hover { opacity: 0.82; }
+.pw-error { margin-top: 14px; font-size: 13px; color: #b91c1c; display: none; }
+
+/* ── Loading ── */
+#loading-screen { min-height: 100vh; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 18px; }
+.spinner { width: 34px; height: 34px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { font-size: 14px; color: var(--text-muted); }
+
+/* ── Header ── */
+#app { display: none; }
+header { background: rgba(255,255,255,0.92); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); padding: 0 32px; height: 58px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+.header-left { display: flex; align-items: center; gap: 12px; }
+.logo-mark { width: 34px; height: 34px; background: var(--text); border-radius: 9px; display: flex; align-items: center; justify-content: center; }
+.logo-mark svg { color: white; }
+.header-title { font-size: 14px; font-weight: 500; }
+.header-subtitle { font-size: 11px; color: var(--text-muted); }
+
+/* ── Main ── */
+main { max-width: 1200px; margin: 0 auto; padding: 28px 24px 60px; }
+
+/* ── Stats Bar ── */
+.stats-bar { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 22px; }
+.stat-cell { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px 16px; text-align: center; }
+.stat-num { font-family: var(--mono); font-size: 26px; color: var(--text); line-height: 1; margin-bottom: 4px; }
+.stat-num-sm { font-family: var(--mono); font-size: 14px; color: var(--text); line-height: 1.5; margin-bottom: 4px; }
+.stat-sub { font-size: 11px; color: var(--text-muted); font-family: var(--mono); margin-bottom: 4px; }
+.stat-label { font-size: 11px; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; }
+
+/* ── Filter ── */
+.filter-section { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px 24px; margin-bottom: 28px; }
+.filter-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); font-weight: 500; margin-bottom: 10px; }
+.year-buttons { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+.year-btn { padding: 6px 16px; border: 1.5px solid var(--border); border-radius: 8px; background: var(--bg); font-family: var(--sans); font-size: 13px; font-weight: 500; color: var(--text-muted); cursor: pointer; transition: all 0.15s; }
+.year-btn:hover { border-color: var(--accent); color: var(--accent); }
+.year-btn.active { background: var(--text); color: white; border-color: var(--text); }
+.month-row { display: flex; align-items: center; gap: 10px; }
+.month-label { font-size: 13px; color: var(--text-muted); }
+.month-select { border: 1.5px solid var(--border); background: var(--bg); border-radius: 8px; padding: 7px 12px; font-family: var(--sans); font-size: 13px; color: var(--text); outline: none; cursor: pointer; transition: border-color 0.2s; }
+.month-select:focus { border-color: var(--accent); }
+.filter-count { margin-left: 16px; font-family: var(--mono); font-size: 13px; color: var(--text-muted); }
+
+/* ── Section Titles ── */
+.section-title { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-light); font-weight: 500; margin: 32px 0 16px; display: flex; align-items: center; gap: 14px; }
+.section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* ── Chart Grids ── */
+.charts-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px; }
+.charts-3col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-bottom: 18px; }
+.charts-4col { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-bottom: 18px; }
+.charts-1col { margin-bottom: 18px; }
+
+/* ── Chart Card ── */
+.chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 22px 24px; }
+.chart-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); font-weight: 500; margin-bottom: 18px; }
+.chart-wrap { position: relative; }
+.h200 { height: 200px; }
+.h320 { height: 320px; }
+.h420 { height: 420px; }
+.h520 { height: 520px; }
+.h580 { height: 580px; }
+.h240 { height: 240px; }
+
+/* ── Data Table ── */
+.table-btn { margin-top: 14px; background: none; border: 1px solid var(--border); border-radius: 6px; padding: 5px 12px; font-size: 11px; color: var(--text-muted); cursor: pointer; transition: all 0.15s; font-family: var(--sans); }
+.table-btn:hover { background: var(--surface2); color: var(--text); border-color: var(--text-muted); }
+.table-wrap { display: none; margin-top: 14px; max-height: 360px; overflow-y: auto; }
+.data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.data-table th { text-align: left; padding: 7px 10px; background: var(--surface2); font-weight: 500; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); position: sticky; top: 0; }
+.data-table td { padding: 7px 10px; border-top: 1px solid var(--border); color: var(--text); }
+.data-table td:last-child, .data-table td:nth-child(2) { font-family: var(--mono); text-align: right; }
+.data-table tr:hover td { background: var(--surface2); }
+
+/* ── Responsive ── */
+@media (max-width: 960px) {
+  .charts-4col { grid-template-columns: repeat(2, 1fr); }
+  .stats-bar { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 640px) {
+  .charts-2col, .charts-3col, .charts-4col { grid-template-columns: 1fr; }
+  .stats-bar { grid-template-columns: repeat(2, 1fr); }
+  main { padding: 16px 16px 40px; }
+  header { padding: 0 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── 密碼畫面 ── -->
+<div id="pw-screen">
+  <div class="pw-card">
+    <div class="pw-logo">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+      </svg>
+    </div>
+    <div class="pw-title">台大兒童轉運外接</div>
+    <div class="pw-subtitle">統計分析系統 · 請輸入密碼</div>
+    <input type="password" class="pw-input" id="pw-input" placeholder="••••••••" autocomplete="current-password">
+    <button class="pw-btn" onclick="submitPw()">進入</button>
+    <div class="pw-error" id="pw-error">密碼錯誤，請再試一次</div>
+  </div>
+</div>
+
+<!-- ── 載入畫面 ── -->
+<div id="loading-screen">
+  <div class="spinner"></div>
+  <div class="loading-text">資料庫載入中，請稍候…（首次約需 10–20 秒）</div>
+</div>
+
+<!-- ── 主畫面 ── -->
+<div id="app">
+  <header>
+    <div class="header-left">
+      <div class="logo-mark">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+        </svg>
+      </div>
+      <div>
+        <div class="header-title">台大兒童醫院 轉運外接 · 統計分析</div>
+        <div class="header-subtitle">NTUCH Transport Team · Analytics Dashboard</div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+      <div class="stat-cell">
+        <div class="stat-num" id="s-total">—</div>
+        <div class="stat-sub" id="s-sub">外接: — | 轉出: —</div>
+        <div class="stat-label">歷史任務</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-num" id="s-filtered">—</div>
+        <div class="stat-label">篩選後筆數</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-num" id="s-hospitals">—</div>
+        <div class="stat-label">合作院所</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-num" id="s-counties">—</div>
+        <div class="stat-label">縣市涵蓋</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-num-sm" id="s-last-date">—</div>
+        <div class="stat-label">資料更新日期</div>
+      </div>
+    </div>
+
+    <!-- Filter -->
+    <div class="filter-section">
+      <div class="filter-label">篩選年份</div>
+      <div class="year-buttons" id="year-buttons"></div>
+      <div class="filter-label">月份區間</div>
+      <div class="month-row">
+        <span class="month-label">從</span>
+        <select class="month-select" id="m-from" onchange="applyFilter()">
+          <option value="1">01月</option><option value="2">02月</option><option value="3">03月</option>
+          <option value="4">04月</option><option value="5">05月</option><option value="6">06月</option>
+          <option value="7">07月</option><option value="8">08月</option><option value="9">09月</option>
+          <option value="10">10月</option><option value="11">11月</option><option value="12">12月</option>
+        </select>
+        <span class="month-label">到</span>
+        <select class="month-select" id="m-to" onchange="applyFilter()">
+          <option value="1">01月</option><option value="2">02月</option><option value="3">03月</option>
+          <option value="4">04月</option><option value="5">05月</option><option value="6">06月</option>
+          <option value="7">07月</option><option value="8">08月</option><option value="9">09月</option>
+          <option value="10">10月</option><option value="11">11月</option><option value="12" selected>12月</option>
+        </select>
+        <span class="filter-count" id="filter-count">篩選中：— 筆</span>
+      </div>
+    </div>
+
+    <!-- 地理分布 -->
+    <div class="section-title">地理與院所類型</div>
+    <div class="charts-2col">
+      <div class="chart-card">
+        <div class="chart-title">出勤縣市分布</div>
+        <div class="chart-wrap h420"><canvas id="c-county"></canvas></div>
+        <button class="table-btn" onclick="toggleTbl('t-county',this)">顯示數據</button>
+        <div class="table-wrap" id="t-county"></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">醫療機構類型</div>
+        <div class="chart-wrap h420"><canvas id="c-inst"></canvas></div>
+        <button class="table-btn" onclick="toggleTbl('t-inst',this)">顯示數據</button>
+        <div class="table-wrap" id="t-inst"></div>
+      </div>
+    </div>
+
+    <!-- 臨床指標 -->
+    <div class="section-title">臨床指標</div>
+    <div class="charts-3col">
+      <div class="chart-card">
+        <div class="chart-title">Airway · 插管比例</div>
+        <div class="chart-wrap h240"><canvas id="c-airway"></canvas></div>
+        <button class="table-btn" onclick="toggleTbl('t-airway',this)">顯示數據</button>
+        <div class="table-wrap" id="t-airway"></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">動脈導管（A-line）</div>
+        <div class="chart-wrap h240"><canvas id="c-aline"></canvas></div>
+        <button class="table-btn" onclick="toggleTbl('t-aline',this)">顯示數據</button>
+        <div class="table-wrap" id="t-aline"></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Central Line 比例</div>
+        <div class="chart-wrap h240"><canvas id="c-cl"></canvas></div>
+        <button class="table-btn" onclick="toggleTbl('t-cl',this)">顯示數據</button>
+        <div class="table-wrap" id="t-cl"></div>
+      </div>
+    </div>
+
+    <!-- 科別 -->
+    <div class="section-title">病人科別</div>
+    <div class="charts-1col">
+      <div class="chart-card">
+        <div class="chart-title">疾病科別統計</div>
+        <div class="chart-wrap h320"><canvas id="c-specialty"></canvas></div>
+        <button class="table-btn" onclick="toggleTbl('t-specialty',this)">顯示數據</button>
+        <div class="table-wrap" id="t-specialty"></div>
+      </div>
+    </div>
+
+    <!-- 院所 -->
+    <div class="section-title">轉出院所</div>
+    <div class="charts-1col">
+      <div class="chart-card">
+        <div class="chart-title">轉出院所名稱 TOP 20</div>
+        <div class="chart-wrap h580"><canvas id="c-hospital"></canvas></div>
+        <button class="table-btn" onclick="toggleTbl('t-hospital',this)">顯示數據</button>
+        <div class="table-wrap" id="t-hospital"></div>
+      </div>
+    </div>
+
+    <!-- 單位 -->
+    <div class="section-title">單位統計</div>
+    <div class="charts-2col">
+      <div class="chart-card">
+        <div class="chart-title">轉出單位</div>
+        <div class="chart-wrap h420"><canvas id="c-unit"></canvas></div>
+        <button class="table-btn" onclick="toggleTbl('t-unit',this)">顯示數據</button>
+        <div class="table-wrap" id="t-unit"></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">入住單位（台大兒醫）</div>
+        <div class="chart-wrap h420"><canvas id="c-adm"></canvas></div>
+        <button class="table-btn" onclick="toggleTbl('t-adm',this)">顯示數據</button>
+        <div class="table-wrap" id="t-adm"></div>
+      </div>
+    </div>
+
+    <!-- 人員 -->
+    <div class="section-title">人員出勤</div>
+    <div class="charts-2col">
+      <div class="chart-card">
+        <div class="chart-title">護理師出勤次數</div>
+        <div class="chart-wrap h420"><canvas id="c-nurse"></canvas></div>
+        <button class="table-btn" onclick="toggleTbl('t-nurse',this)">顯示數據</button>
+        <div class="table-wrap" id="t-nurse"></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">醫師出勤次數</div>
+        <div class="chart-wrap h420"><canvas id="c-doctor"></canvas></div>
+        <button class="table-btn" onclick="toggleTbl('t-doctor',this)">顯示數據</button>
+        <div class="table-wrap" id="t-doctor"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+// ▶ 修改這裡：填入你的 Render 後端網址
+const BACKEND = 'https://ntuch-transport-analytics.onrender.com';
+
+// ── 顏色 ──
+const PALETTE = [
+  '#4a6741','#8b7d55','#5a7a8a','#a07060','#707862',
+  '#7a6080','#4a7080','#806040','#507060','#604870',
+  '#708050','#504060','#406070','#705040','#405060'
+];
+const BAR_COLOR = '#4a6741';
+
+let rawData   = null;
+let activeYear = '全部';
+let charts    = {};
+
+// ── 密碼 ──
+document.getElementById('pw-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') submitPw();
+});
+
+async function submitPw() {
+  const pw = document.getElementById('pw-input').value.trim();
+  if (!pw) return;
+  document.getElementById('pw-screen').style.display = 'none';
+  document.getElementById('loading-screen').style.display = 'flex';
+  sessionStorage.setItem('ntuch_analytics_pw', pw);
+  await loadData(pw);
+}
+
+async function loadData(pw) {
+  try {
+    const res = await fetch(`${BACKEND}/api/analytics-data`, {
+      headers: { 'Authorization': `Bearer ${pw}` }
+    });
+    if (res.status === 401) {
+      sessionStorage.removeItem('ntuch_analytics_pw');
+      document.getElementById('loading-screen').style.display = 'none';
+      document.getElementById('pw-screen').style.display = 'flex';
+      const err = document.getElementById('pw-error');
+      err.textContent = '密碼錯誤，請再試一次';
+      err.style.display = 'block';
+      return;
+    }
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    rawData = await res.json();
+    initApp();
+  } catch(e) {
+    document.getElementById('loading-screen').style.display = 'none';
+    document.getElementById('pw-screen').style.display = 'flex';
+    const err = document.getElementById('pw-error');
+    err.textContent = `連線失敗，請稍後再試（${e.message}）`;
+    err.style.display = 'block';
+  }
+}
+
+function initApp() {
+  document.getElementById('loading-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+
+  const s = rawData.stats;
+  document.getElementById('s-total').textContent    = s.total;
+  document.getElementById('s-sub').textContent      = `外接: ${s.outbound} | 轉出: ${s.transfer}`;
+  document.getElementById('s-last-date').textContent = s.last_date || '—';
+
+  // 年份按鈕
+  const container = document.getElementById('year-buttons');
+  ['全部', ...s.years].forEach(y => {
+    const btn = document.createElement('button');
+    btn.className = 'year-btn' + (y === '全部' ? ' active' : '');
+    btn.textContent = y;
+    btn.onclick = () => selectYear(y);
+    container.appendChild(btn);
+  });
+
+  initCharts();
+  applyFilter();
+}
+
+function selectYear(y) {
+  activeYear = y;
+  document.querySelectorAll('.year-btn').forEach(btn =>
+    btn.classList.toggle('active', btn.textContent === y)
+  );
+  applyFilter();
+}
+
+function getFiltered() {
+  if (!rawData) return [];
+  const from = parseInt(document.getElementById('m-from').value);
+  const to   = parseInt(document.getElementById('m-to').value);
+  return rawData.records.filter(r => {
+    if (activeYear !== '全部' && r.year !== activeYear) return false;
+    if (r.date && r.date.length >= 7) {
+      const m = parseInt(r.date.substring(5, 7));
+      const lo = Math.min(from, to), hi = Math.max(from, to);
+      if (m < lo || m > hi) return false;
+    }
+    return true;
+  });
+}
+
+function applyFilter() {
+  const f = getFiltered();
+  document.getElementById('filter-count').textContent  = `篩選中：${f.length} 筆`;
+  document.getElementById('s-filtered').textContent    = f.length;
+  document.getElementById('s-hospitals').textContent   = new Set(f.map(r => r.hospital).filter(Boolean)).size;
+  document.getElementById('s-counties').textContent    = new Set(f.map(r => r.county).filter(Boolean)).size;
+  updateAllCharts(f);
+}
+
+// ── Chart helpers ──
+function freq(arr, key, top = 0) {
+  const c = {};
+  arr.forEach(r => {
+    const v = (key ? r[key] : r) || '';
+    if (!v) return;
+    c[v] = (c[v] || 0) + 1;
+  });
+  let sorted = Object.entries(c).sort((a, b) => b[1] - a[1]);
+  if (top > 0) sorted = sorted.slice(0, top);
+  return { labels: sorted.map(x => x[0]), data: sorted.map(x => x[1]) };
+}
+
+function renderTbl(id, labels, data, total) {
+  const el = document.getElementById(id);
+  if (!labels.length) { el.innerHTML = '<div style="padding:12px;font-size:13px;color:var(--text-muted);">無資料</div>'; return; }
+  const rows = labels.map((l, i) => {
+    const pct = total > 0 ? ((data[i] / total) * 100).toFixed(1) : '0.0';
+    return `<tr><td>${l}</td><td>${data[i]}</td><td>${pct}%</td></tr>`;
+  }).join('');
+  el.innerHTML = `<table class="data-table">
+    <thead><tr><th>項目</th><th style="text-align:right">次數</th><th style="text-align:right">比例</th></tr></thead>
+    <tbody>${rows}</tbody>
+  </table>`;
+}
+
+function toggleTbl(id, btn) {
+  const el = document.getElementById(id);
+  const show = el.style.display !== 'block';
+  el.style.display = show ? 'block' : 'none';
+  btn.textContent  = show ? '隱藏數據' : '顯示數據';
+}
+
+function makeBar(id) {
+  const ctx = document.getElementById(id).getContext('2d');
+  return new Chart(ctx, {
+    type: 'bar',
+    data: { labels: [], datasets: [{ data: [], backgroundColor: BAR_COLOR, borderRadius: 4, borderSkipped: false }] },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.x} 次` } }
+      },
+      scales: {
+        x: {
+          grid: { color: '#f0ede8' },
+          ticks: { font: { family: 'DM Mono', size: 12 }, color: '#9a9189' }
+        },
+        y: {
+          grid: { display: false },
+          ticks: { font: { family: 'Noto Sans TC', size: 12 }, color: '#2c2825' }
+        }
+      }
+    }
+  });
+}
+
+function makeDonut(id) {
+  const ctx = document.getElementById(id).getContext('2d');
+  return new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: [],
+      datasets: [{ data: [], backgroundColor: PALETTE, borderWidth: 2, borderColor: '#ffffff', hoverOffset: 6 }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: false,
+      cutout: '62%',
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { font: { family: 'Noto Sans TC', size: 11 }, color: '#9a9189', padding: 10, boxWidth: 12 }
+        },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+              const pct   = total > 0 ? ((ctx.parsed / total) * 100).toFixed(1) : '0.0';
+              return ` ${ctx.label}: ${ctx.parsed} 次 (${pct}%)`;
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+function setBar(chart, labels, data, color) {
+  chart.data.labels = labels;
+  chart.data.datasets[0].data  = data;
+  if (color) chart.data.datasets[0].backgroundColor = color;
+  chart.update('none');
+}
+
+function setDonut(chart, labels, data) {
+  chart.data.labels = labels;
+  chart.data.datasets[0].data = data;
+  chart.data.datasets[0].backgroundColor = PALETTE.slice(0, labels.length);
+  chart.update('none');
+}
+
+// ── 建立所有圖表 ──
+function initCharts() {
+  charts.county    = makeBar('c-county');
+  charts.inst      = makeBar('c-inst');
+  charts.airway    = makeDonut('c-airway');
+  charts.aline     = makeDonut('c-aline');
+  charts.cl        = makeDonut('c-cl');
+  charts.specialty = makeBar('c-specialty');
+  charts.hospital  = makeBar('c-hospital');
+  charts.unit      = makeBar('c-unit');
+  charts.adm       = makeBar('c-adm');
+  charts.nurse     = makeBar('c-nurse');
+  charts.doctor    = makeBar('c-doctor');
+}
+
+// ── 更新所有圖表 ──
+function updateAllCharts(f) {
+  const n = f.length;
+
+  // 縣市
+  const county = freq(f, 'county', 25);
+  setBar(charts.county, county.labels, county.data);
+  renderTbl('t-county', county.labels, county.data, n);
+
+  // 機構類型
+  const inst = freq(f, 'inst_type');
+  setBar(charts.inst, inst.labels, inst.data);
+  renderTbl('t-inst', inst.labels, inst.data, n);
+
+  // Airway
+  const aw = { 'ETT（插管）': 0, 'Room Air': 0, '其他': 0 };
+  f.forEach(r => {
+    const v = (r.airway || '').toUpperCase();
+    if (v.includes('ETT'))      aw['ETT（插管）']++;
+    else if (v.includes('ROOM')) aw['Room Air']++;
+    else if (v)                  aw['其他']++;
+    else                         aw['Room Air']++;
+  });
+  const awL = Object.keys(aw).filter(k => aw[k] > 0);
+  const awD = awL.map(k => aw[k]);
+  setDonut(charts.airway, awL, awD);
+  renderTbl('t-airway', awL, awD, n);
+
+  // A-line
+  let alY = 0, alN = 0;
+  f.forEach(r => { (!r.aline || r.aline === '無') ? alN++ : alY++; });
+  setDonut(charts.aline, ['有', '無'], [alY, alN]);
+  renderTbl('t-aline', ['有', '無'], [alY, alN], n);
+
+  // Central line
+  let clY = 0, clN = 0;
+  f.forEach(r => {
+    (r.cl || []).some(v => v && v !== '無') ? clY++ : clN++;
+  });
+  setDonut(charts.cl, ['有', '無'], [clY, clN]);
+  renderTbl('t-cl', ['有', '無'], [clY, clN], n);
+
+  // 科別
+  const spec = freq(f, 'specialty', 15);
+  setBar(charts.specialty, spec.labels, spec.data);
+  renderTbl('t-specialty', spec.labels, spec.data, n);
+
+  // 院所 top20
+  const hosp = freq(f, 'hospital', 20);
+  setBar(charts.hospital, hosp.labels, hosp.data);
+  renderTbl('t-hospital', hosp.labels, hosp.data, n);
+
+  // 單位
+  const unit = freq(f, 'unit', 20);
+  setBar(charts.unit, unit.labels, unit.data);
+  renderTbl('t-unit', unit.labels, unit.data, n);
+
+  const adm = freq(f, 'adm_unit', 20);
+  setBar(charts.adm, adm.labels, adm.data);
+  renderTbl('t-adm', adm.labels, adm.data, n);
+
+  // 人員
+  const nurse = freq(f, 'nurse', 20);
+  setBar(charts.nurse, nurse.labels, nurse.data);
+  renderTbl('t-nurse', nurse.labels, nurse.data, n);
+
+  const doctor = freq(f, 'doctor', 20);
+  setBar(charts.doctor, doctor.labels, doctor.data);
+  renderTbl('t-doctor', doctor.labels, doctor.data, n);
+}
+
+// ── 自動登入（session 記住密碼）──
+const savedPw = sessionStorage.getItem('ntuch_analytics_pw');
+if (savedPw) {
+  document.getElementById('pw-screen').style.display = 'none';
+  document.getElementById('loading-screen').style.display = 'flex';
+  loadData(savedPw);
+}
+</script>
+</body>
+</html>
