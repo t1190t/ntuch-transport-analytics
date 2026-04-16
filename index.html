@@ -17,6 +17,7 @@
   --text-muted: #9a9189;
   --text-light: #c4bfb8;
   --accent: #4a6741;
+  --accent-light: #edf2ec;
   --sans: 'Noto Sans TC', sans-serif;
   --mono: 'DM Mono', monospace;
   --shadow: 0 2px 12px rgba(0,0,0,0.06);
@@ -55,24 +56,30 @@ header { background: rgba(255,255,255,0.92); backdrop-filter: blur(10px); border
 /* ── Main ── */
 main { max-width: 1200px; margin: 0 auto; padding: 28px 24px 60px; }
 
-/* ── Stats Bar ── */
-.stats-bar { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 12px; }
+/* ── Section label chip ── */
+.zone-label {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+  font-weight: 600; padding: 3px 10px; border-radius: 20px;
+  margin-bottom: 10px;
+}
+.zone-label.all-time {
+  background: #2c2825; color: #fff;
+}
+.zone-label.range {
+  background: var(--accent-light); color: var(--accent); border: 1px solid #c8dac5;
+}
+
+/* ── Stats Bar (歷史) ── */
+.stats-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 12px; }
 .stat-cell { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px 16px; text-align: center; }
 .stat-num { font-family: var(--mono); font-size: 26px; color: var(--text); line-height: 1; margin-bottom: 4px; }
 .stat-num-sm { font-family: var(--mono); font-size: 14px; color: var(--text); line-height: 1.5; margin-bottom: 4px; }
 .stat-sub { font-size: 11px; color: var(--text-muted); font-family: var(--mono); margin-bottom: 4px; }
 .stat-label { font-size: 11px; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; }
 
-/* ── Avg Bar (TISS / NTISS) ── */
-.avg-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-.avg-cell { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; }
-.avg-num { font-family: var(--mono); font-size: 28px; color: var(--text); flex-shrink: 0; }
-.avg-detail { text-align: left; }
-.avg-label { font-size: 12px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
-.avg-n { font-size: 11px; color: var(--text-muted); font-family: var(--mono); }
-
 /* ── Record Cards (極值) ── */
-.record-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 22px; }
+.record-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 28px; }
 .record-cell { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; }
 .record-badge { font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-light); font-weight: 500; margin-bottom: 8px; }
 .record-val { font-family: var(--mono); font-size: 20px; color: var(--text); line-height: 1; margin-bottom: 6px; }
@@ -80,7 +87,7 @@ main { max-width: 1200px; margin: 0 auto; padding: 28px 24px 60px; }
 .record-hosp { font-size: 11px; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* ── Filter ── */
-.filter-section { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px 24px; margin-bottom: 28px; }
+.filter-section { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px 24px; margin-bottom: 14px; }
 .filter-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); font-weight: 500; margin-bottom: 10px; }
 .year-buttons { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
 .year-btn { padding: 6px 16px; border: 1.5px solid var(--border); border-radius: 8px; background: var(--bg); font-family: var(--sans); font-size: 13px; font-weight: 500; color: var(--text-muted); cursor: pointer; transition: all 0.15s; }
@@ -90,13 +97,46 @@ main { max-width: 1200px; margin: 0 auto; padding: 28px 24px 60px; }
 .date-label { font-size: 13px; color: var(--text-muted); flex-shrink: 0; }
 .date-input { border: 1.5px solid var(--border); background: var(--bg); border-radius: 8px; padding: 7px 12px; font-family: var(--mono); font-size: 13px; color: var(--text); outline: none; cursor: pointer; transition: border-color 0.2s; }
 .date-input:focus { border-color: var(--accent); }
-.filter-count { margin-left: 8px; font-family: var(--mono); font-size: 13px; color: var(--text-muted); }
+
+/* ── Range Summary（區間統計）── */
+.range-summary {
+  background: var(--accent-light);
+  border: 1px solid #c8dac5;
+  border-radius: 14px;
+  padding: 18px 22px;
+  margin-bottom: 28px;
+}
+.range-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 12px;
+}
+.range-cell { text-align: center; }
+.range-num { font-family: var(--mono); font-size: 22px; color: var(--text); line-height: 1; margin-bottom: 3px; }
+.range-num-sm { font-family: var(--mono); font-size: 13px; color: var(--text); line-height: 1.5; margin-bottom: 3px; }
+.range-sub { font-size: 10px; color: #6a8c62; font-family: var(--mono); margin-bottom: 3px; }
+.range-label { font-size: 10px; color: #6a8c62; letter-spacing: 0.08em; text-transform: uppercase; }
+.range-divider { width: 1px; background: #c8dac5; margin: 0 4px; }
+
+/* second row: extremes + averages */
+.range-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #c8dac5;
+}
+.range-extreme { text-align: left; }
+.range-extreme-val { font-family: var(--mono); font-size: 16px; color: var(--text); line-height: 1; margin-bottom: 2px; }
+.range-extreme-sub { font-size: 10px; color: #6a8c62; }
 
 /* ── Section Titles ── */
 .section-title { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-light); font-weight: 500; margin: 32px 0 16px; display: flex; align-items: center; gap: 14px; }
 .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-/* ── Grids ── */
+/* ── Chart Grids ── */
 .charts-1col { margin-bottom: 18px; }
 .charts-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px; }
 .charts-3col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-bottom: 18px; }
@@ -106,14 +146,9 @@ main { max-width: 1200px; margin: 0 auto; padding: 28px 24px 60px; }
 .chart-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); font-weight: 500; margin-bottom: 18px; }
 .chart-note { font-size: 10px; color: var(--text-light); margin-top: 8px; font-style: italic; }
 .chart-wrap { position: relative; }
-.h200 { height: 200px; }
-.h240 { height: 240px; }
-.h280 { height: 280px; }
-.h320 { height: 320px; }
-.h380 { height: 380px; }
-.h420 { height: 420px; }
-.h520 { height: 520px; }
-.h580 { height: 580px; }
+.h200 { height: 200px; } .h240 { height: 240px; } .h280 { height: 280px; }
+.h320 { height: 320px; } .h380 { height: 380px; } .h420 { height: 420px; }
+.h520 { height: 520px; } .h580 { height: 580px; }
 
 /* ── Data Table ── */
 .table-btn { margin-top: 14px; background: none; border: 1px solid var(--border); border-radius: 6px; padding: 5px 12px; font-size: 11px; color: var(--text-muted); cursor: pointer; transition: all 0.15s; font-family: var(--sans); }
@@ -127,13 +162,12 @@ main { max-width: 1200px; margin: 0 auto; padding: 28px 24px 60px; }
 
 /* ── Responsive ── */
 @media (max-width: 960px) {
-  .stats-bar { grid-template-columns: repeat(3, 1fr); }
+  .stats-bar, .range-grid, .range-grid-2 { grid-template-columns: repeat(2, 1fr); }
   .record-bar { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 640px) {
   .charts-2col, .charts-3col { grid-template-columns: 1fr; }
-  .stats-bar { grid-template-columns: repeat(2, 1fr); }
-  .avg-bar { grid-template-columns: 1fr; }
+  .stats-bar, .range-grid, .range-grid-2 { grid-template-columns: repeat(2, 1fr); }
   .record-bar { grid-template-columns: repeat(2, 1fr); }
   main { padding: 16px 16px 40px; }
   header { padding: 0 16px; }
@@ -182,7 +216,9 @@ main { max-width: 1200px; margin: 0 auto; padding: 28px 24px 60px; }
 
   <main>
 
-    <!-- ① 任務總覽 -->
+    <!-- ══ 區塊 A：全歷史（固定，不隨篩選變動）══ -->
+    <div class="zone-label all-time">● 全歷史總覽</div>
+
     <div class="stats-bar">
       <div class="stat-cell">
         <div class="stat-num" id="s-total">—</div>
@@ -190,16 +226,12 @@ main { max-width: 1200px; margin: 0 auto; padding: 28px 24px 60px; }
         <div class="stat-label">歷史任務</div>
       </div>
       <div class="stat-cell">
-        <div class="stat-num" id="s-filtered">—</div>
-        <div class="stat-label">篩選後筆數</div>
-      </div>
-      <div class="stat-cell">
         <div class="stat-num" id="s-hospitals">—</div>
-        <div class="stat-label">合作院所</div>
+        <div class="stat-label">歷年合作院所</div>
       </div>
       <div class="stat-cell">
         <div class="stat-num" id="s-counties">—</div>
-        <div class="stat-label">縣市涵蓋</div>
+        <div class="stat-label">歷年縣市涵蓋</div>
       </div>
       <div class="stat-cell">
         <div class="stat-num-sm" id="s-last-date">—</div>
@@ -207,7 +239,6 @@ main { max-width: 1200px; margin: 0 auto; padding: 28px 24px 60px; }
       </div>
     </div>
 
-    <!-- ② 歷史極值記錄（全歷史固定，不隨篩選變動）-->
     <div class="record-bar">
       <div class="record-cell">
         <div class="record-badge">歷史最重體重</div>
@@ -235,7 +266,9 @@ main { max-width: 1200px; margin: 0 auto; padding: 28px 24px 60px; }
       </div>
     </div>
 
-    <!-- Filter -->
+    <!-- ══ 區塊 B：時間區間篩選 + 動態統計 ══ -->
+    <div class="zone-label range">◎ 區間篩選</div>
+
     <div class="filter-section">
       <div class="filter-label">篩選年份</div>
       <div class="year-buttons" id="year-buttons"></div>
@@ -245,27 +278,55 @@ main { max-width: 1200px; margin: 0 auto; padding: 28px 24px 60px; }
         <input type="date" class="date-input" id="d-from" onchange="applyFilter()">
         <span class="date-label">到</span>
         <input type="date" class="date-input" id="d-to" onchange="applyFilter()">
-        <span class="filter-count" id="filter-count">篩選中：— 筆</span>
       </div>
     </div>
 
-    <!-- TISS / NTISS 平均（隨篩選年份／月份更新）-->
-    <div class="avg-bar" style="margin-bottom:28px;">
-      <div class="avg-cell">
-        <div class="avg-num" id="s-avg-tiss">—</div>
-        <div class="avg-detail">
-          <div class="avg-label">TISS 平均分數</div>
-          <div class="avg-n" id="s-tiss-n">n = —</div>
+    <!-- 區間動態統計卡 -->
+    <div class="range-summary">
+      <div class="zone-label range" style="margin-bottom:4px;">◎ 區間統計</div>
+
+      <!-- 第一列：任務量、合作院所、縣市 -->
+      <div class="range-grid">
+        <div class="range-cell">
+          <div class="range-num" id="rg-total">—</div>
+          <div class="range-sub" id="rg-sub">外接: — | 轉出: —</div>
+          <div class="range-label">區間出勤</div>
+        </div>
+        <div class="range-cell">
+          <div class="range-num" id="rg-hospitals">—</div>
+          <div class="range-label">合作院所</div>
+        </div>
+        <div class="range-cell">
+          <div class="range-num" id="rg-counties">—</div>
+          <div class="range-label">縣市涵蓋</div>
+        </div>
+        <div class="range-cell">
+          <!-- 佔位，保持對稱 -->
         </div>
       </div>
-      <div class="avg-cell">
-        <div class="avg-num" id="s-avg-ntiss">—</div>
-        <div class="avg-detail">
-          <div class="avg-label">NTISS 平均分數</div>
-          <div class="avg-n" id="s-ntiss-n">n = —</div>
+
+      <!-- 第二列：極值 + TISS/NTISS 平均 -->
+      <div class="range-grid-2">
+        <div class="range-extreme">
+          <div class="range-extreme-val" id="rg-max-weight">—</div>
+          <div class="range-extreme-sub">區間最重體重</div>
+        </div>
+        <div class="range-extreme">
+          <div class="range-extreme-val" id="rg-min-weight">—</div>
+          <div class="range-extreme-sub">區間最輕體重</div>
+        </div>
+        <div class="range-extreme">
+          <div class="range-extreme-val" id="rg-tiss">— <span style="font-size:11px;color:#6a8c62;" id="rg-tiss-detail"></span></div>
+          <div class="range-extreme-sub">TISS 最高 / 平均</div>
+        </div>
+        <div class="range-extreme">
+          <div class="range-extreme-val" id="rg-ntiss">— <span style="font-size:11px;color:#6a8c62;" id="rg-ntiss-detail"></span></div>
+          <div class="range-extreme-sub">NTISS 最高 / 平均</div>
         </div>
       </div>
     </div>
+
+    <!-- ══ 圖表區（隨區間篩選更新）══ -->
 
     <!-- 地理與院所 -->
     <div class="section-title">地理與院所類型</div>
@@ -418,17 +479,12 @@ main { max-width: 1200px; margin: 0 auto; padding: 28px 24px 60px; }
 <script>
 const BACKEND = 'https://ntuch-transport-analytics.onrender.com';
 
-const PALETTE = [
-  '#4a6741','#8b7d55','#5a7a8a','#a07060','#707862',
-  '#7a6080','#4a7080','#806040','#507060','#604870',
-  '#708050','#504060','#406070','#705040','#405060'
-];
+const PALETTE  = ['#4a6741','#8b7d55','#5a7a8a','#a07060','#707862','#7a6080','#4a7080','#806040','#507060','#604870','#708050','#504060','#406070','#705040','#405060'];
 const BAR_COLOR = '#4a6741';
 const GA_ORDER  = ['<28週','28-31週','32-36週','37-41週','>41週','不詳'];
 
-let rawData    = null;
-let activeYear = '全部';
-let charts     = {};
+let rawData = null;
+let charts  = {};
 
 // ── 密碼 ──
 document.getElementById('pw-input').addEventListener('keydown', e => {
@@ -451,9 +507,8 @@ async function loadData(pw) {
       sessionStorage.removeItem('ntuch_analytics_pw');
       document.getElementById('loading-screen').style.display = 'none';
       document.getElementById('pw-screen').style.display = 'flex';
-      const err = document.getElementById('pw-error');
-      err.textContent = '密碼錯誤，請再試一次';
-      err.style.display = 'block';
+      document.getElementById('pw-error').style.display = 'block';
+      document.getElementById('pw-error').textContent = '密碼錯誤，請再試一次';
       return;
     }
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -473,20 +528,23 @@ function initApp() {
   document.getElementById('app').style.display = 'block';
 
   const s = rawData.stats;
+
+  // ── 全歷史固定欄位 ──
   document.getElementById('s-total').textContent    = s.total;
   document.getElementById('s-sub').textContent      = `外接: ${s.outbound} | 轉出: ${s.transfer}`;
   document.getElementById('s-last-date').textContent = s.last_date || '—';
+  document.getElementById('s-hospitals').textContent = s.all_hospitals;
+  document.getElementById('s-counties').textContent  = s.all_counties;
 
-  // 極值卡片（全歷史，固定）
+  // 極值卡片
   setRecord('max-weight', s.max_weight, ' kg');
-  // 最輕體重改顯示公克
   if (s.min_weight.value !== null && s.min_weight.value !== undefined) {
     document.getElementById('r-min-weight-val').textContent  = `${Math.round(s.min_weight.value * 1000)} g`;
     document.getElementById('r-min-weight-date').textContent = s.min_weight.date     || '—';
     document.getElementById('r-min-weight-hosp').textContent = s.min_weight.hospital || '—';
   }
-  setRecord('max-tiss',   s.max_tiss,   ' 分');
-  setRecord('max-ntiss',  s.max_ntiss,  ' 分');
+  setRecord('max-tiss',  s.max_tiss,  ' 分');
+  setRecord('max-ntiss', s.max_ntiss, ' 分');
 
   // 年份按鈕
   const container = document.getElementById('year-buttons');
@@ -498,9 +556,9 @@ function initApp() {
     container.appendChild(btn);
   });
 
-  // 日期選擇器預設：全部資料的最早～最晚
+  // 日期預設：全部
   const allDates = rawData.records.map(r => r.date).filter(Boolean).sort();
-  document.getElementById('d-from').value = allDates[0]  || '';
+  document.getElementById('d-from').value = allDates[0] || '';
   document.getElementById('d-to').value   = allDates[allDates.length - 1] || '';
 
   initCharts();
@@ -508,20 +566,18 @@ function initApp() {
 }
 
 function setRecord(prefix, data, unit = '') {
-  document.getElementById(`r-${prefix}-val`).textContent  = data.value !== null && data.value !== undefined ? `${data.value}${unit}` : '—';
+  document.getElementById(`r-${prefix}-val`).textContent  = data.value != null ? `${data.value}${unit}` : '—';
   document.getElementById(`r-${prefix}-date`).textContent = data.date     || '—';
   document.getElementById(`r-${prefix}-hosp`).textContent = data.hospital || '—';
 }
 
 function selectYear(y) {
-  activeYear = y;
   document.querySelectorAll('.year-btn').forEach(btn =>
     btn.classList.toggle('active', btn.textContent === y)
   );
-  // 點年份時自動設定日期區間
   if (y === '全部') {
     const allDates = rawData.records.map(r => r.date).filter(Boolean).sort();
-    document.getElementById('d-from').value = allDates[0]  || '';
+    document.getElementById('d-from').value = allDates[0] || '';
     document.getElementById('d-to').value   = allDates[allDates.length - 1] || '';
   } else {
     document.getElementById('d-from').value = `${y}-01-01`;
@@ -531,34 +587,58 @@ function selectYear(y) {
 }
 
 function getFiltered() {
-  if (!rawData) return [];
-  const from = document.getElementById('d-from').value; // 'YYYY-MM-DD' or ''
+  if (!rawData) return { records: [], transfers: [] };
+  const from = document.getElementById('d-from').value;
   const to   = document.getElementById('d-to').value;
-  return rawData.records.filter(r => {
-    if (r.date) {
-      if (from && r.date < from) return false;
-      if (to   && r.date > to)   return false;
-    }
+  const records = rawData.records.filter(r => {
+    if (!r.date) return true;
+    if (from && r.date < from) return false;
+    if (to   && r.date > to)   return false;
     return true;
   });
+  const transfers = rawData.transfers.filter(t => {
+    if (!t.date) return true;
+    if (from && t.date < from) return false;
+    if (to   && t.date > to)   return false;
+    return true;
+  });
+  return { records, transfers };
 }
 
 function applyFilter() {
-  const f = getFiltered();
+  const { records: f, transfers: ft } = getFiltered();
   const n = f.length;
 
-  document.getElementById('filter-count').textContent = `篩選中：${n} 筆`;
-  document.getElementById('s-filtered').textContent   = n;
-  document.getElementById('s-hospitals').textContent  = new Set(f.map(r => r.hospital).filter(Boolean)).size;
-  document.getElementById('s-counties').textContent   = new Set(f.map(r => r.county).filter(Boolean)).size;
+  // 區間動態統計
+  document.getElementById('rg-total').textContent = f.length + ft.length;
+  document.getElementById('rg-sub').textContent   = `外接: ${f.length} | 轉出: ${ft.length}`;
+  document.getElementById('rg-hospitals').textContent = new Set(f.map(r => r.hospital).filter(Boolean)).size;
+  document.getElementById('rg-counties').textContent  = new Set(f.map(r => r.county).filter(Boolean)).size;
 
-  // TISS / NTISS 平均（隨篩選更新）
-  const tissV  = f.map(r => r.tiss).filter(x => x !== null && x !== undefined);
-  const ntissV = f.map(r => r.ntiss).filter(x => x !== null && x !== undefined);
-  document.getElementById('s-avg-tiss').textContent  = tissV.length  ? (tissV.reduce((a,b)=>a+b,0)/tissV.length).toFixed(1)   : '—';
-  document.getElementById('s-avg-ntiss').textContent = ntissV.length ? (ntissV.reduce((a,b)=>a+b,0)/ntissV.length).toFixed(1) : '—';
-  document.getElementById('s-tiss-n').textContent    = `n = ${tissV.length}`;
-  document.getElementById('s-ntiss-n').textContent   = `n = ${ntissV.length}`;
+  // 區間極值體重
+  const wList = f.map(r => r.weight).filter(x => x != null);
+  document.getElementById('rg-max-weight').textContent = wList.length ? `${Math.max(...wList)} kg` : '—';
+  document.getElementById('rg-min-weight').textContent = wList.length ? `${Math.round(Math.min(...wList)*1000)} g` : '—';
+
+  // 區間 TISS
+  const tList = f.map(r => r.tiss).filter(x => x != null);
+  if (tList.length) {
+    document.getElementById('rg-tiss').childNodes[0].textContent = `${Math.max(...tList)}`;
+    document.getElementById('rg-tiss-detail').textContent = `/ avg ${(tList.reduce((a,b)=>a+b,0)/tList.length).toFixed(1)}`;
+  } else {
+    document.getElementById('rg-tiss').childNodes[0].textContent = '—';
+    document.getElementById('rg-tiss-detail').textContent = '';
+  }
+
+  // 區間 NTISS
+  const ntList = f.map(r => r.ntiss).filter(x => x != null);
+  if (ntList.length) {
+    document.getElementById('rg-ntiss').childNodes[0].textContent = `${Math.max(...ntList)}`;
+    document.getElementById('rg-ntiss-detail').textContent = `/ avg ${(ntList.reduce((a,b)=>a+b,0)/ntList.length).toFixed(1)}`;
+  } else {
+    document.getElementById('rg-ntiss').childNodes[0].textContent = '—';
+    document.getElementById('rg-ntiss-detail').textContent = '';
+  }
 
   updateAllCharts(f);
 }
@@ -578,30 +658,24 @@ function freq(arr, key, top = 0) {
 
 function renderTbl(id, labels, data, total, note) {
   const el = document.getElementById(id);
-  if (!labels.length) {
-    el.innerHTML = '<div style="padding:12px;font-size:13px;color:var(--text-muted);">無資料</div>';
-    return;
-  }
+  if (!labels.length) { el.innerHTML = '<div style="padding:12px;font-size:13px;color:var(--text-muted);">無資料</div>'; return; }
   const rows = labels.map((l, i) => {
     const pct = total > 0 ? ((data[i] / total) * 100).toFixed(1) : '0.0';
     return `<tr><td>${l}</td><td>${data[i]}</td><td>${pct}%</td></tr>`;
   }).join('');
   const noteHtml = note ? `<tr><td colspan="3" style="font-size:10px;color:var(--text-light);font-style:italic;padding:6px 10px;">${note}</td></tr>` : '';
-  el.innerHTML = `<table class="data-table">
-    <thead><tr><th>項目</th><th style="text-align:right">次數</th><th style="text-align:right">比例</th></tr></thead>
-    <tbody>${rows}${noteHtml}</tbody>
-  </table>`;
+  el.innerHTML = `<table class="data-table"><thead><tr><th>項目</th><th style="text-align:right">次數</th><th style="text-align:right">比例</th></tr></thead><tbody>${rows}${noteHtml}</tbody></table>`;
 }
 
 function toggleTbl(id, btn) {
-  const el   = document.getElementById(id);
+  const el = document.getElementById(id);
   const show = el.style.display !== 'block';
   el.style.display = show ? 'block' : 'none';
-  btn.textContent  = show ? '隱藏數據' : '顯示數據';
+  btn.textContent = show ? '隱藏數據' : '顯示數據';
 }
 
 function gaGroup(ga) {
-  if (ga === null || ga === undefined) return '不詳';
+  if (ga == null) return '不詳';
   if (ga < 28)  return '<28週';
   if (ga < 32)  return '28-31週';
   if (ga < 37)  return '32-36週';
@@ -609,24 +683,17 @@ function gaGroup(ga) {
   return '>41週';
 }
 
-// ── Chart factories ──
 function makeBar(id) {
   const ctx = document.getElementById(id).getContext('2d');
   return new Chart(ctx, {
     type: 'bar',
     data: { labels: [], datasets: [{ data: [], backgroundColor: BAR_COLOR, borderRadius: 4, borderSkipped: false }] },
     options: {
-      indexAxis: 'y',
-      responsive: true,
-      maintainAspectRatio: false,
-      animation: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.x} 次` } }
-      },
+      indexAxis: 'y', responsive: true, maintainAspectRatio: false, animation: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.x} 次` } } },
       scales: {
         x: { grid: { color: '#f0ede8' }, ticks: { font: { family: 'DM Mono', size: 12 }, color: '#9a9189' } },
-        y: { grid: { display: false },   ticks: { font: { family: 'Noto Sans TC', size: 12 }, color: '#2c2825' } }
+        y: { grid: { display: false }, ticks: { font: { family: 'Noto Sans TC', size: 12 }, color: '#2c2825' } }
       }
     }
   });
@@ -638,33 +705,20 @@ function makeDonut(id) {
     type: 'doughnut',
     data: { labels: [], datasets: [{ data: [], backgroundColor: PALETTE, borderWidth: 2, borderColor: '#ffffff', hoverOffset: 6 }] },
     options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      animation: false,
-      cutout: '62%',
+      responsive: true, maintainAspectRatio: false, animation: false, cutout: '62%',
       plugins: {
         legend: { position: 'bottom', labels: { font: { family: 'Noto Sans TC', size: 11 }, color: '#9a9189', padding: 10, boxWidth: 12 } },
-        tooltip: {
-          callbacks: {
-            label: ctx => {
-              const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
-              const pct   = total > 0 ? ((ctx.parsed / total) * 100).toFixed(1) : '0.0';
-              return ` ${ctx.label}: ${ctx.parsed} 次 (${pct}%)`;
-            }
-          }
-        }
+        tooltip: { callbacks: { label: ctx => { const t = ctx.dataset.data.reduce((a,b)=>a+b,0); const p = t>0?((ctx.parsed/t)*100).toFixed(1):'0.0'; return ` ${ctx.label}: ${ctx.parsed} 次 (${p}%)`; } } }
       }
     }
   });
 }
 
-function setBar(chart, labels, data, color) {
+function setBar(chart, labels, data) {
   chart.data.labels = labels;
   chart.data.datasets[0].data = data;
-  if (color) chart.data.datasets[0].backgroundColor = color;
   chart.update('none');
 }
-
 function setDonut(chart, labels, data) {
   chart.data.labels = labels;
   chart.data.datasets[0].data = data;
@@ -672,127 +726,63 @@ function setDonut(chart, labels, data) {
   chart.update('none');
 }
 
-// ── 初始化所有圖表 ──
 function initCharts() {
-  charts.county   = makeBar('c-county');
-  charts.inst     = makeBar('c-inst');
-  charts.gender   = makeDonut('c-gender');
-  charts.ga       = makeBar('c-ga');
-  charts.airway   = makeBar('c-airway');
-  charts.aline    = makeDonut('c-aline');
-  charts.clDonut  = makeDonut('c-cl-donut');
-  charts.clBar    = makeBar('c-cl-bar');
-  charts.cvDonut  = makeDonut('c-cv-donut');
-  charts.cvBar    = makeBar('c-cv-bar');
-  charts.specialty= makeBar('c-specialty');
-  charts.hospital = makeBar('c-hospital');
-  charts.unit     = makeBar('c-unit');
-  charts.adm      = makeBar('c-adm');
-  charts.nurse    = makeBar('c-nurse');
-  charts.doctor   = makeBar('c-doctor');
+  charts.county    = makeBar('c-county');
+  charts.inst      = makeBar('c-inst');
+  charts.gender    = makeDonut('c-gender');
+  charts.ga        = makeBar('c-ga');
+  charts.airway    = makeBar('c-airway');
+  charts.aline     = makeDonut('c-aline');
+  charts.clDonut   = makeDonut('c-cl-donut');
+  charts.clBar     = makeBar('c-cl-bar');
+  charts.cvDonut   = makeDonut('c-cv-donut');
+  charts.cvBar     = makeBar('c-cv-bar');
+  charts.specialty = makeBar('c-specialty');
+  charts.hospital  = makeBar('c-hospital');
+  charts.unit      = makeBar('c-unit');
+  charts.adm       = makeBar('c-adm');
+  charts.nurse     = makeBar('c-nurse');
+  charts.doctor    = makeBar('c-doctor');
 }
 
-// ── 更新所有圖表 ──
 function updateAllCharts(f) {
   const n = f.length;
 
-  // 縣市
-  const county = freq(f, 'county', 25);
-  setBar(charts.county, county.labels, county.data);
-  renderTbl('t-county', county.labels, county.data, n);
+  const county = freq(f,'county',25); setBar(charts.county, county.labels, county.data); renderTbl('t-county',county.labels,county.data,n);
+  const inst   = freq(f,'inst_type'); setBar(charts.inst,   inst.labels,   inst.data);   renderTbl('t-inst',  inst.labels,  inst.data,  n);
 
-  // 機構類型
-  const inst = freq(f, 'inst_type');
-  setBar(charts.inst, inst.labels, inst.data);
-  renderTbl('t-inst', inst.labels, inst.data, n);
+  const gc = {}; f.forEach(r=>{ if(r.gender) gc[r.gender]=(gc[r.gender]||0)+1; });
+  setDonut(charts.gender, Object.keys(gc), Object.values(gc)); renderTbl('t-gender',Object.keys(gc),Object.values(gc),n);
 
-  // 性別
-  const genderC = {};
-  f.forEach(r => { if (r.gender) genderC[r.gender] = (genderC[r.gender]||0)+1; });
-  const gL = Object.keys(genderC), gD = Object.values(genderC);
-  setDonut(charts.gender, gL, gD);
-  renderTbl('t-gender', gL, gD, n);
+  const gaC = {}; GA_ORDER.forEach(k=>gaC[k]=0); f.forEach(r=>{const g=gaGroup(r.ga);gaC[g]++;});
+  const gaL = GA_ORDER.filter(k=>gaC[k]>0), gaD = gaL.map(k=>gaC[k]);
+  setBar(charts.ga, gaL, gaD); renderTbl('t-ga',gaL,gaD,n);
 
-  // GA 週數分組
-  const gaC = {};
-  GA_ORDER.forEach(k => gaC[k] = 0);
-  f.forEach(r => { const g = gaGroup(r.ga); gaC[g]++; });
-  const gaLabels = GA_ORDER.filter(k => gaC[k] > 0);
-  const gaData   = gaLabels.map(k => gaC[k]);
-  setBar(charts.ga, gaLabels, gaData);
-  renderTbl('t-ga', gaLabels, gaData, n);
+  const aw = freq(f,'airway'); setBar(charts.airway,aw.labels,aw.data); renderTbl('t-airway',aw.labels,aw.data,n);
 
-  // 呼吸支持（橫向長條）
-  const aw = freq(f, 'airway');
-  setBar(charts.airway, aw.labels, aw.data);
-  renderTbl('t-airway', aw.labels, aw.data, n);
+  let alY=0,alN=0; f.forEach(r=>{(!r.aline||r.aline==='無')?alN++:alY++;});
+  setDonut(charts.aline,['有','無'],[alY,alN]); renderTbl('t-aline',['有','無'],[alY,alN],n);
 
-  // A-line
-  let alY = 0, alN = 0;
-  f.forEach(r => { (!r.aline || r.aline === '無') ? alN++ : alY++; });
-  setDonut(charts.aline, ['有','無'], [alY, alN]);
-  renderTbl('t-aline', ['有','無'], [alY, alN], n);
+  let clY=0,clN=0; f.forEach(r=>{(r.cl_types&&r.cl_types.length>0)?clY++:clN++;});
+  setDonut(charts.clDonut,['有 CL','無 CL'],[clY,clN]); renderTbl('t-cl-donut',['有 CL','無 CL'],[clY,clN],n);
 
-  // Central line donut（有/無）
-  let clY = 0, clN = 0;
-  f.forEach(r => { (r.cl_types && r.cl_types.length > 0) ? clY++ : clN++; });
-  setDonut(charts.clDonut, ['有 CL','無 CL'], [clY, clN]);
-  renderTbl('t-cl-donut', ['有 CL','無 CL'], [clY, clN], n);
+  const clC={}; f.forEach(r=>{(r.cl_types||[]).forEach(t=>{clC[t]=(clC[t]||0)+1;});});
+  const clS=Object.entries(clC).sort((a,b)=>b[1]-a[1]);
+  setBar(charts.clBar,clS.map(x=>x[0]),clS.map(x=>x[1])); renderTbl('t-cl-bar',clS.map(x=>x[0]),clS.map(x=>x[1]),clY,'* 同一病人可能有複數管路');
 
-  // Central line bar（各類型，獨立計算）
-  const clTypeC = {};
-  f.forEach(r => { (r.cl_types||[]).forEach(t => { clTypeC[t] = (clTypeC[t]||0)+1; }); });
-  const clSorted = Object.entries(clTypeC).sort((a,b) => b[1]-a[1]);
-  setBar(charts.clBar, clSorted.map(x=>x[0]), clSorted.map(x=>x[1]));
-  renderTbl('t-cl-bar', clSorted.map(x=>x[0]), clSorted.map(x=>x[1]), clY,
-    '* 同一病人可能有複數管路，加總可能超過有 CL 的病人數');
+  let cvY=0,cvN=0; f.forEach(r=>{(!r.cv_drug||r.cv_drug==='無')?cvN++:cvY++;});
+  setDonut(charts.cvDonut,['有升壓藥','無'],[cvY,cvN]); renderTbl('t-cv-donut',['有升壓藥','無'],[cvY,cvN],n);
 
-  // 心血管用藥 donut
-  let cvY = 0, cvN = 0;
-  f.forEach(r => { (!r.cv_drug || r.cv_drug === '無') ? cvN++ : cvY++; });
-  setDonut(charts.cvDonut, ['有升壓藥','無'], [cvY, cvN]);
-  renderTbl('t-cv-donut', ['有升壓藥','無'], [cvY, cvN], n);
+  const cvC={}; f.forEach(r=>{if(!r.cv_drug||r.cv_drug==='無')return; r.cv_drug.split(',').map(x=>x.trim()).filter(Boolean).forEach(d=>{cvC[d]=(cvC[d]||0)+1;});});
+  const cvS=Object.entries(cvC).sort((a,b)=>b[1]-a[1]);
+  setBar(charts.cvBar,cvS.map(x=>x[0]),cvS.map(x=>x[1])); renderTbl('t-cv-bar',cvS.map(x=>x[0]),cvS.map(x=>x[1]),cvY,'* 同一病人可能使用複數藥物');
 
-  // 心血管用藥 bar（各藥物獨立計算）
-  const cvTypeC = {};
-  f.forEach(r => {
-    if (!r.cv_drug || r.cv_drug === '無') return;
-    r.cv_drug.split(',').map(x=>x.trim()).filter(Boolean).forEach(d => {
-      cvTypeC[d] = (cvTypeC[d]||0)+1;
-    });
-  });
-  const cvSorted = Object.entries(cvTypeC).sort((a,b) => b[1]-a[1]);
-  setBar(charts.cvBar, cvSorted.map(x=>x[0]), cvSorted.map(x=>x[1]));
-  renderTbl('t-cv-bar', cvSorted.map(x=>x[0]), cvSorted.map(x=>x[1]), cvY,
-    '* 同一病人可能使用複數藥物，各藥物獨立計算');
-
-  // 科別
-  const spec = freq(f, 'specialty', 15);
-  setBar(charts.specialty, spec.labels, spec.data);
-  renderTbl('t-specialty', spec.labels, spec.data, n);
-
-  // 院所 top20
-  const hosp = freq(f, 'hospital', 20);
-  setBar(charts.hospital, hosp.labels, hosp.data);
-  renderTbl('t-hospital', hosp.labels, hosp.data, n);
-
-  // 單位
-  const unit = freq(f, 'unit', 20);
-  setBar(charts.unit, unit.labels, unit.data);
-  renderTbl('t-unit', unit.labels, unit.data, n);
-
-  const adm = freq(f, 'adm_unit', 20);
-  setBar(charts.adm, adm.labels, adm.data);
-  renderTbl('t-adm', adm.labels, adm.data, n);
-
-  // 人員
-  const nurse = freq(f, 'nurse', 20);
-  setBar(charts.nurse, nurse.labels, nurse.data);
-  renderTbl('t-nurse', nurse.labels, nurse.data, n);
-
-  const doctor = freq(f, 'doctor', 20);
-  setBar(charts.doctor, doctor.labels, doctor.data);
-  renderTbl('t-doctor', doctor.labels, doctor.data, n);
+  const spec=freq(f,'specialty',15); setBar(charts.specialty,spec.labels,spec.data); renderTbl('t-specialty',spec.labels,spec.data,n);
+  const hosp=freq(f,'hospital',20);  setBar(charts.hospital, hosp.labels,hosp.data); renderTbl('t-hospital', hosp.labels,hosp.data,n);
+  const unit=freq(f,'unit',20);      setBar(charts.unit,     unit.labels,unit.data); renderTbl('t-unit',     unit.labels,unit.data,n);
+  const adm =freq(f,'adm_unit',20);  setBar(charts.adm,      adm.labels, adm.data);  renderTbl('t-adm',      adm.labels, adm.data, n);
+  const nrs =freq(f,'nurse',20);     setBar(charts.nurse,    nrs.labels, nrs.data);  renderTbl('t-nurse',    nrs.labels, nrs.data, n);
+  const doc =freq(f,'doctor',20);    setBar(charts.doctor,   doc.labels, doc.data);  renderTbl('t-doctor',   doc.labels, doc.data, n);
 }
 
 // ── 自動登入 ──
